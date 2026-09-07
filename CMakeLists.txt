@@ -12,6 +12,12 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(prog src/main.cpp)
+add_executable(prog
+	src/main.cpp
+   	src/screencalc.cpp
+	src/gamelogic.cpp
+	src/gamedraw.cpp
+)
 target_compile_features(prog PRIVATE cxx_std_17)
+target_include_directories(prog PRIVATE include)
 target_link_libraries(prog PRIVATE SFML::Graphics)
