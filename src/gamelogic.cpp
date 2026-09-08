@@ -1,6 +1,7 @@
 #include <gameconfig.h>
 #include <gamelogic.h>
 #include <cstdlib>
+#include <algorithm>
 
 void runTickLogic(GameState& game, sf::Window& window) {
 	sf::Time now = game.clock.getElapsedTime();
