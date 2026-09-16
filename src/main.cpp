@@ -29,10 +29,12 @@ Known issues:
 #include "gamelogic.h"
 #include "gamedraw.h"
 #include "screencalc.h"
+#include "menu.h"
 
 int main() {
 	srand(time(NULL));
 	initGameDraw();
+	initMenu();
 	
 	sf::RenderWindow window(sf::VideoMode({640, 480}), "RAAAAAAH");
 	window.setVerticalSyncEnabled(true);
@@ -53,15 +55,27 @@ int main() {
 			
 			if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
 				if (keyPressed->scancode == sf::Keyboard::Scan::Space) {
-					game.bird.yVel = BIRD_JUMP_VEL;
+					if (game.status == GameStatus::Menu) {
+						game.status = GameStatus::Playing;
+						game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
+						game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
+					} else {
+						game.bird.yVel = BIRD_JUMP_VEL;
+					}
 				}
 			}
 		}
 		
-		runTickLogic(game, window);
+		if (game.status == GameStatus::Playing) {
+			runTickLogic(game, window);
+		}
 		
 		window.clear();
-		drawGame(game, window);
+		if (game.status == GameStatus::Menu) {
+			drawMenu(game, window);
+		} else {
+			drawGame(game, window);
+		}
 		window.display();
 		
 		
@@ -69,4 +83,3 @@ int main() {
 
 	return 0;
 }
-

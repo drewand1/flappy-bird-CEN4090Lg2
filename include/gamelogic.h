@@ -4,6 +4,11 @@
 #include <SFML/Window.hpp>
 #include <vector>
 
+enum class GameStatus {
+	Menu,
+	Playing
+};
+
 struct Bird {
 	sf::Vector2f pos; // 0 will be treated as the middle of the screen to make it easier to handle screen resizing;
 	float yVel = 0; // we don't have to recalc the middle on screen resize. As a result conversions need to happen
@@ -17,6 +22,7 @@ struct Pipe {
 };
 
 struct GameState {
+	GameStatus status = GameStatus::Menu;
 	Bird bird;
 	std::vector<Pipe> pipes;
 	unsigned int score = 0;

@@ -17,6 +17,7 @@ add_executable(prog
    	src/screencalc.cpp
 	src/gamelogic.cpp
 	src/gamedraw.cpp
+	src/menu.cpp
 )
 target_compile_features(prog PRIVATE cxx_std_17)
 target_include_directories(prog PRIVATE include)
