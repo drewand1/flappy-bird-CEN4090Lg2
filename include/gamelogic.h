@@ -17,7 +17,7 @@ struct Bird {
 
 struct Pipe {
 	float xPos = 0;
-	float gapHeight = 10.0f;
+	float gapHeight = 200.0f;
 	float gapPos = 0;
 };
 
@@ -33,5 +33,6 @@ struct GameState {
 };
 
 void runTickLogic(GameState& game, sf::Window& window);
+void resetGame(GameState& game);
 
 #endif

@@ -5,7 +5,7 @@ Basic flappy bird skeleton
 To do:
 []	Menu, score UI
 []	Score keeping
-[]	Collision detection (floor & pipe)
+[x]	Collision detection (floor & pipe)
 []	Game over state
 []	Sounds
 []	Parallax scrolling effect
@@ -59,8 +59,10 @@ int main() {
 						game.status = GameStatus::Playing;
 						game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
 						game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
-					} else {
+					} else if (game.alive) {
 						game.bird.yVel = BIRD_JUMP_VEL;
+					} else {
+						resetGame(game);
 					}
 				}
 			}
