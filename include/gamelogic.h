@@ -6,7 +6,8 @@
 
 enum class GameStatus {
 	Menu,
-	Playing
+	Playing,
+	GameOver
 };
 
 struct Bird {
@@ -19,6 +20,7 @@ struct Pipe {
 	float xPos = 0;
 	float gapHeight = 200.0f;
 	float gapPos = 0;
+	bool passed = false;
 };
 
 struct GameState {
@@ -30,6 +32,8 @@ struct GameState {
 	sf::Time lastPipeSpawn;
 	sf::Time lastTick;
 	bool alive = true;
+	unsigned int health = 3;
+	sf::Time lastHitTime;
 };
 
 void runTickLogic(GameState& game, sf::Window& window);

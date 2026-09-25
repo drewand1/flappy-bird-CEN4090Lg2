@@ -6,5 +6,6 @@
 
 void initGameDraw();
 void drawGame(const GameState& game, sf::RenderWindow& window);
+void drawGameOver(const GameState& game, sf::RenderWindow& window);
 
 #endif
