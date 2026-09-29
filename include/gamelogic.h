@@ -2,12 +2,22 @@
 #define GAMELOGIC_H
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <vector>
 
-enum class GameStatus {
+/*enum class GameStatus {
 	Menu,
 	Playing,
 	GameOver
+};
+*/
+
+struct GameState; // Forward Declaration for GameStatus
+
+struct GameStatus {
+	void (*keyPressed)(GameState& game, const sf::Event::KeyPressed* event) = nullptr;
+	void (*mouseButtonPressed)(GameState& game, const sf::Event::MouseButtonPressed* event) = nullptr;
+	void (*draw)(const GameState& game, sf::RenderWindow& window) = nullptr;
 };
 
 struct Bird {
@@ -24,7 +34,7 @@ struct Pipe {
 };
 
 struct GameState {
-	GameStatus status = GameStatus::Menu;
+	GameStatus status;
 	Bird bird;
 	std::vector<Pipe> pipes;
 	unsigned int score = 0;
@@ -34,9 +44,11 @@ struct GameState {
 	bool alive = true;
 	unsigned int health = 3;
 	sf::Time lastHitTime;
+	sf::RenderWindow* window = nullptr;
 };
 
 void runTickLogic(GameState& game, sf::Window& window);
 void resetGame(GameState& game);
+void playGame(GameState& game);
 
 #endif

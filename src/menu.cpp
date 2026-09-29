@@ -12,6 +12,15 @@ static sf::Sprite menuPipeSprite(menuPipeTex);
 static sf::Sprite menuGroundSprite(menuGroundTex);
 static sf::Font menuFont("rsc/fonts/PressStart2P-Regular.ttf");
 
+// Defining the game status
+GameStatus GameStatuses::menu = {
+	.keyPressed = keyPressedMenu,
+	.mouseButtonPressed = nullptr,
+	.draw = drawMenu
+};
+
+// Fn defs
+
 void initMenu() {
 	menuBirdTex.setSmooth(false);
 	menuPipeTex.setSmooth(false);
@@ -27,6 +36,13 @@ void initMenu() {
 	menuPipeSprite.setOrigin({8.0f, static_cast<float>(menuPipeSprite.getLocalBounds().size.y)});
 
 	menuGroundSprite.setTexture(menuGroundTex);
+}
+
+void keyPressedMenu(GameState& game, const sf::Event::KeyPressed* event) {
+	if (event->scancode == sf::Keyboard::Scancode::Space) {
+		resetGame(game);
+		playGame(game);
+	}
 }
 
 // Main menu screen.
