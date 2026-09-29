@@ -3,10 +3,10 @@
 Basic flappy bird skeleton
 
 To do:
-[]	Menu, score UI
-[]	Score keeping
+[x]	Menu, score UI
+[x]	Score keeping
 [x]	Collision detection (floor & pipe)
-[]	Game over state
+[x]	Game over state
 []	Sounds
 []	Parallax scrolling effect
 
