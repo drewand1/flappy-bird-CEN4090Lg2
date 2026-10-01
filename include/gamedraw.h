@@ -4,8 +4,12 @@
 #include <SFML/Window.hpp>
 #include "gamelogic.h"
 
+extern sf::Font gameFont;
+extern sf::Texture birdTex;
+extern sf::Texture pipeTex;
+extern sf::Sprite birdSprite;
+extern sf::Sprite pipeSprite;
+
 void initGameDraw();
-void drawGame(const GameState& game, sf::RenderWindow& window);
-void drawGameOver(const GameState& game, sf::RenderWindow& window);
 
 #endif

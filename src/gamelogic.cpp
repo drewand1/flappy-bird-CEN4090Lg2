@@ -1,17 +1,26 @@
 #include "gameconfig.h"
 #include "gamelogic.h"
 #include "collision.h"
+#include "menu.h"
+#include "playing.h"
+#include "gameover.h"
 #include <cstdlib>
 #include <algorithm>
 
 void resetGame(GameState& game) {
-	game.status = GameStatus::Menu;
+	game.status = GameStatuses::menu;
 	game.alive = true;
 	game.health = 3;
 	game.bird.pos = {0.0f, 0.0f};
 	game.bird.yVel = 0.0f;
 	game.pipes.clear();
 	game.score = 0;
+}
+
+void playGame(GameState& game) {
+	game.status = GameStatuses::playing;
+	game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
+	game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
 }
 
 void runTickLogic(GameState& game, sf::Window& window) {
@@ -76,7 +85,7 @@ void runTickLogic(GameState& game, sf::Window& window) {
 
 			if (game.health <= 0) {
 				game.alive = false;
-				game.status = GameStatus::GameOver; // Trigger Game Over screen
+				game.status = GameStatuses::gameOver; // Trigger Game Over screen
 
 				if (game.bird.pos.y - BIRD_RADIUS <= winBottom) {
 					game.bird.pos.y = winBottom + BIRD_RADIUS;
