@@ -30,6 +30,7 @@ Known issues:
 #include "gamedraw.h"
 #include "screencalc.h"
 #include "menu.h"
+#include "playing.h"
 
 int main() {
 	srand(time(NULL));
@@ -68,7 +69,7 @@ int main() {
 			}
 		}
 
-		if (game.alive) {
+		if (game.status.draw == drawPlaying) { // Disgustingly hacky but if it works it works
 			runTickLogic(game, window);
 		}
 

@@ -41,7 +41,7 @@ struct GameState {
 	sf::Clock clock;
 	sf::Time lastPipeSpawn;
 	sf::Time lastTick;
-	bool alive = true;
+	bool alive = false;
 	unsigned int health = 3;
 	sf::Time lastHitTime;
 	sf::RenderWindow* window = nullptr;

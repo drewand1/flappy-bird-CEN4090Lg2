@@ -6,6 +6,7 @@
 #include "gameover.h"
 #include <cstdlib>
 #include <algorithm>
+#include <iostream>
 
 void resetGame(GameState& game) {
 	game.status = GameStatuses::menu;
