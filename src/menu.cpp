@@ -1,4 +1,5 @@
 #include <cmath>
+#include "gameconfig.h"
 #include "menu.h"
 
 // Loads its own copies of the bird/pipe textures so this file doesn't
@@ -51,7 +52,7 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	float t = game.clock.getElapsedTime().asSeconds();
 
 	// Sky background
-	sf::RectangleShape sky(sf::Vector2f{winSz});
+	sf::RectangleShape sky(sf::Vector2f{VIEW_WIDTH, VIEW_HEIGHT});
 	sky.setPosition({0.f, 0.f});
 	sky.setFillColor(sf::Color(78, 192, 202));
 	window.draw(sky);
@@ -67,15 +68,15 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	// repeat wraps, which reads as visible seams. A solid dirt-colored
 	// rectangle underneath means any gap shows matching dirt color instead
 	// of whatever's behind it.
-	sf::RectangleShape groundBacking({static_cast<float>(winSz.x), groundHeight});
-	groundBacking.setPosition({0.f, winSz.y - groundHeight});
+	sf::RectangleShape groundBacking({static_cast<float>(VIEW_WIDTH), groundHeight});
+	groundBacking.setPosition({0.f, VIEW_HEIGHT - groundHeight});
 	groundBacking.setFillColor(sf::Color(122, 68, 74));
 	window.draw(groundBacking);
 
-	unsigned int groundRepeatWidth = static_cast<unsigned int>(std::ceil(winSz.x / groundScale));
+	unsigned int groundRepeatWidth = static_cast<unsigned int>(std::ceil(VIEW_WIDTH / groundScale));
 	menuGroundSprite.setTextureRect(sf::IntRect({0, 0}, {static_cast<int>(groundRepeatWidth), 16}));
 	menuGroundSprite.setScale({groundScale, groundScale});
-	menuGroundSprite.setPosition({0.f, winSz.y - groundHeight});
+	menuGroundSprite.setPosition({0.f, VIEW_HEIGHT - groundHeight});
 	window.draw(menuGroundSprite);
 
 	// Decorative pipes flanking the menu. Rotated 180° so the wide cap
@@ -84,44 +85,44 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	// Height is capped at half the window so there's clear open sky
 	// above them -- handy since the first real gameplay pipe can start
 	// roughly where these leave off once we transition out of the menu.
-	float groundTopY = winSz.y - groundHeight;
-	float pipeVisibleHeight = winSz.y * 0.5f;
+	float groundTopY = VIEW_HEIGHT - groundHeight;
+	float pipeVisibleHeight = VIEW_HEIGHT * 0.5f;
 	float pipeTexHeight = static_cast<float>(menuPipeTex.getSize().y);
 	float pipeScaleY = pipeVisibleHeight / pipeTexHeight;
 
 	menuPipeSprite.setScale({4.0f, pipeScaleY});
 	menuPipeSprite.setRotation(sf::degrees(180));
 
-	menuPipeSprite.setPosition({winSz.x * 0.15f, groundTopY - pipeVisibleHeight});
+	menuPipeSprite.setPosition({VIEW_WIDTH * 0.15f, groundTopY - pipeVisibleHeight});
 	window.draw(menuPipeSprite);
 
-	menuPipeSprite.setPosition({winSz.x * 0.85f, groundTopY - pipeVisibleHeight});
+	menuPipeSprite.setPosition({VIEW_WIDTH * 0.85f, groundTopY - pipeVisibleHeight});
 	window.draw(menuPipeSprite);
 
 	// Bobbing bird, front and center
 	float bob = std::sin(t * 2.5f) * 10.0f;
 	menuBirdSprite.setRotation(sf::degrees(0));
-	menuBirdSprite.setPosition({winSz.x / 2.0f, winSz.y * 0.38f + bob});
+	menuBirdSprite.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.38f + bob});
 	window.draw(menuBirdSprite);
 
 	// Title, centered where the placeholder box used to be
-	sf::Text title(menuFont, "Flappy Bird", static_cast<unsigned int>(winSz.y * 0.085f));
+	sf::Text title(menuFont, "Flappy Bird", static_cast<unsigned int>(VIEW_WIDTH * 0.085f));
 	title.setFillColor(sf::Color::White);
 	title.setOutlineColor(sf::Color::Black);
 	title.setOutlineThickness(3.f);
 	sf::FloatRect titleBounds = title.getLocalBounds();
 	title.setOrigin(titleBounds.position + titleBounds.size / 2.0f);
-	title.setPosition({winSz.x / 2.0f, winSz.y * 0.15f});
+	title.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.15f});
 	window.draw(title);
 
 	// Pulsing "Press Space to Start" prompt
 	float pulse = (std::sin(t * 4.0f) + 1.0f) / 2.0f;
-	sf::Text prompt(menuFont, "Press Space to Start", static_cast<unsigned int>(winSz.y * 0.032f));
+	sf::Text prompt(menuFont, "Press Space to Start", static_cast<unsigned int>(VIEW_HEIGHT * 0.032f));
 	prompt.setFillColor(sf::Color(255, 255, 255, static_cast<std::uint8_t>(120 + pulse * 135)));
 	prompt.setOutlineColor(sf::Color::Black);
 	prompt.setOutlineThickness(2.f);
 	sf::FloatRect promptBounds = prompt.getLocalBounds();
 	prompt.setOrigin(promptBounds.position + promptBounds.size / 2.0f);
-	prompt.setPosition({winSz.x / 2.0f, winSz.y * 0.68f});
+	prompt.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.68f});
 	window.draw(prompt);
 }
