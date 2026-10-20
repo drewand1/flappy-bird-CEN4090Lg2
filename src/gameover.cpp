@@ -19,8 +19,8 @@ void mouseGameOver(GameState& game, const sf::Event::MouseButtonPressed* event) 
 		sf::Vector2f winSz(game.window->getSize());
 
 		// Define bounds for buttons
-		sf::FloatRect playAgainBounds({ winSz.x / 2.0f - 100.0f, winSz.y / 2.0f - 65.0f }, { 200.0f, 50.0f });
-		sf::FloatRect menuBounds({ winSz.x / 2.0f - 100.0f, winSz.y / 2.0f + 15.0f }, { 200.0f, 50.0f });
+		sf::FloatRect playAgainBounds({ VIEW_WIDTH / 2.0f - 100.0f, VIEW_HEIGHT / 2.0f - 65.0f }, { 200.0f, 50.0f });
+		sf::FloatRect menuBounds({ VIEW_WIDTH / 2.0f - 100.0f, VIEW_HEIGHT / 2.0f + 15.0f }, { 200.0f, 50.0f });
 
 		if (playAgainBounds.contains(mousePos)) {
 			resetGame(game);
@@ -42,9 +42,7 @@ void keyGameOver(GameState& game, const sf::Event::KeyPressed* event) {
 void drawGameOver(const GameState& game, sf::RenderWindow& window) {
 	drawPlaying(game, window);
 
-	sf::Vector2f winSz(window.getSize());
-
-	sf::RectangleShape overlay(winSz);
+	sf::RectangleShape overlay(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
 	overlay.setFillColor(sf::Color(0, 0, 0, 150));
 	window.draw(overlay);
 
@@ -55,12 +53,12 @@ void drawGameOver(const GameState& game, sf::RenderWindow& window) {
 	overText.setOutlineThickness(2.0f);
 	sf::FloatRect overBounds = overText.getLocalBounds();
 	overText.setOrigin({ overBounds.position.x + overBounds.size.x / 2.0f, overBounds.position.y + overBounds.size.y / 2.0f });
-	overText.setPosition({ winSz.x / 2.0f, winSz.y * 0.2f });
+	overText.setPosition({ VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.2f });
 	window.draw(overText);
 
 	// Play Again Button
 	sf::RectangleShape playBtn({ 200.0f, 50.0f });
-	playBtn.setPosition({ winSz.x / 2.0f - 100.0f, winSz.y / 2.0f - 65.0f });
+	playBtn.setPosition({ VIEW_WIDTH / 2.0f - 100.0f, VIEW_HEIGHT / 2.0f - 65.0f });
 	playBtn.setFillColor(sf::Color(50, 150, 50));
 	playBtn.setOutlineColor(sf::Color::White);
 	playBtn.setOutlineThickness(2.0f);
@@ -70,12 +68,12 @@ void drawGameOver(const GameState& game, sf::RenderWindow& window) {
 	playText.setFillColor(sf::Color::White);
 	sf::FloatRect playTBounds = playText.getLocalBounds();
 	playText.setOrigin({ playTBounds.position.x + playTBounds.size.x / 2.0f, playTBounds.position.y + playTBounds.size.y / 2.0f });
-	playText.setPosition({ winSz.x / 2.0f, winSz.y / 2.0f - 40.0f });
+	playText.setPosition({ VIEW_WIDTH / 2.0f, VIEW_HEIGHT / 2.0f - 40.0f });
 	window.draw(playText);
 
 	// Main Menu Button
 	sf::RectangleShape menuBtn({ 200.0f, 50.0f });
-	menuBtn.setPosition({ winSz.x / 2.0f - 100.0f, winSz.y / 2.0f + 15.0f });
+	menuBtn.setPosition({ VIEW_WIDTH / 2.0f - 100.0f, VIEW_HEIGHT / 2.0f + 15.0f });
 	menuBtn.setFillColor(sf::Color(150, 50, 50));
 	menuBtn.setOutlineColor(sf::Color::White);
 	menuBtn.setOutlineThickness(2.0f);
@@ -85,6 +83,6 @@ void drawGameOver(const GameState& game, sf::RenderWindow& window) {
 	menuText.setFillColor(sf::Color::White);
 	sf::FloatRect menuTBounds = menuText.getLocalBounds();
 	menuText.setOrigin({ menuTBounds.position.x + menuTBounds.size.x / 2.0f, menuTBounds.position.y + menuTBounds.size.y / 2.0f });
-	menuText.setPosition({ winSz.x / 2.0f, winSz.y / 2.0f + 40.0f });
+	menuText.setPosition({ VIEW_WIDTH / 2.0f, VIEW_HEIGHT / 2.0f + 40.0f });
 	window.draw(menuText);
 }

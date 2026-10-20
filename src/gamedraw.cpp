@@ -20,6 +20,6 @@ void initGameDraw() {
 	birdSprite.setOrigin({8.0f, 8.0f});
 	
 	pipeSprite.setTexture(pipeTex);
-	pipeSprite.setScale({4.0f, 10.0f});
+	pipeSprite.setScale({5.0f, 10.0f});
 	pipeSprite.setOrigin({8.0f, static_cast<float>(pipeSprite.getLocalBounds().size.y)}); // So that we can rotate around the mouth of the pipe to make it easier to position
 }

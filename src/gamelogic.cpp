@@ -36,11 +36,11 @@ void runTickLogic(GameState& game, sf::Window& window) {
 
 	// let dead bird fall to winBottom
 	if (!game.alive) {
-		if (game.bird.pos.y > winBottom + BIRD_RADIUS) {
+		if (game.bird.pos.y > -VIEW_HEIGHT / 2 + BIRD_RADIUS) {
 			game.bird.pos.y += game.bird.yVel * dt;
 			game.bird.yVel -= GRAVITY_CONST * dt;
-			if (game.bird.pos.y <= winBottom + BIRD_RADIUS) {
-				game.bird.pos.y = winBottom + BIRD_RADIUS;
+			if (game.bird.pos.y <= -VIEW_HEIGHT / 2 + BIRD_RADIUS) {
+				game.bird.pos.y = -VIEW_HEIGHT / 2 + BIRD_RADIUS;
 				game.bird.yVel = 0.0f;
 			}
 		}
@@ -48,7 +48,7 @@ void runTickLogic(GameState& game, sf::Window& window) {
 	}
 
 	// Update bird
-	game.bird.pos.x = winSz.x / -2.4f;
+	game.bird.pos.x = -VIEW_WIDTH / 2.0f + 80.0f;
 	game.bird.pos.y += game.bird.yVel * dt;
 	game.bird.yVel -= GRAVITY_CONST * dt;
 
@@ -64,21 +64,21 @@ void runTickLogic(GameState& game, sf::Window& window) {
 
 	// despawn passed pipes (left of screen)
 	std::erase_if(game.pipes, [winLeft](const Pipe& pipe) {
-		return pipe.xPos + PIPE_HALF_WIDTH < winLeft;
+		return pipe.xPos + PIPE_HALF_WIDTH < -VIEW_WIDTH / 2.0f;
 		});
 
 	// Spawn pipe
 	if ((now - game.lastPipeSpawn).asSeconds() > PIPE_BASE_SPAWN_COOLDOWN) {
 		Pipe pipe;
 		pipe.gapHeight = PIPE_BASE_GAP_SIZE;
-		pipe.gapPos = static_cast<float>(rand() % (static_cast<int>(0.8f * winSz.y)) - static_cast<int>(0.4f * winSz.y));
-		pipe.xPos = winSz.x / 2.0f + PIPE_HALF_WIDTH;
+		pipe.gapPos = static_cast<float>(rand() % static_cast<int>(VIEW_HEIGHT * 0.8f) - static_cast<int>(0.4f * VIEW_HEIGHT));
+		pipe.xPos = VIEW_WIDTH / 2.0f + PIPE_HALF_WIDTH;
 		game.pipes.push_back(pipe);
 		game.lastPipeSpawn = now;
 	}
 
 	// Collision detection
-	if (checkCollisions(game, winSz)) {
+	if (checkCollisions(game, sf::Vector2u(VIEW_WIDTH, VIEW_HEIGHT))) {
 		// 1-second Invulnerability Cooldown
 		if ((now - game.lastHitTime).asSeconds() > 1.0f) {
 			game.health--;
@@ -88,12 +88,12 @@ void runTickLogic(GameState& game, sf::Window& window) {
 				game.alive = false;
 				game.status = GameStatuses::gameOver; // Trigger Game Over screen
 
-				if (game.bird.pos.y - BIRD_RADIUS <= winBottom) {
-					game.bird.pos.y = winBottom + BIRD_RADIUS;
+				if (game.bird.pos.y - BIRD_RADIUS <= -VIEW_HEIGHT / 2.0f) {
+					game.bird.pos.y = -VIEW_HEIGHT / 2.0f + BIRD_RADIUS;
 					game.bird.yVel = 0.0f;
 				}
-				else if (game.bird.pos.y + BIRD_RADIUS >= winTop) {
-					game.bird.pos.y = winTop - BIRD_RADIUS;
+				else if (game.bird.pos.y + BIRD_RADIUS >= VIEW_HEIGHT / 2.0f) {
+					game.bird.pos.y = VIEW_HEIGHT / 2.0f - BIRD_RADIUS;
 					game.bird.yVel = 0.0f;
 				}
 			}
