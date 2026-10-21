@@ -16,6 +16,7 @@ void resetGame(GameState& game) {
 	game.bird.yVel = 0.0f;
 	game.pipes.clear();
 	game.score = 0;
+	game.scrollDistance = 0.0f;
 }
 
 void playGame(GameState& game) {
@@ -51,6 +52,9 @@ void runTickLogic(GameState& game, sf::Window& window) {
 	game.bird.pos.x = -VIEW_WIDTH / 2.0f + 80.0f;
 	game.bird.pos.y += game.bird.yVel * dt;
 	game.bird.yVel -= GRAVITY_CONST * dt;
+
+	// Move background
+	game.scrollDistance += PIPE_BASE_SPEED * dt;
 
 	// Update pipes
 	for (auto& pipe : game.pipes) {

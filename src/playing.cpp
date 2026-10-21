@@ -5,6 +5,7 @@
 #include "gameconfig.h"
 #include "string"
 #include "playing.h"
+#include "background.h"
 #include <iostream>
 using namespace std;
 
@@ -20,6 +21,9 @@ void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event) {
 }
 
 void drawPlaying(const GameState& game, sf::RenderWindow& window) {
+	// Draw background first so its behind everything
+	drawBackground(window, game.scrollDistance, game.bird.pos.y);
+
 	// Draw bird
 	birdSprite.setPosition(normToScreen(game.bird.pos, window));
 	birdSprite.setRotation(sf::degrees(std::clamp(-40 - (game.bird.yVel - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
