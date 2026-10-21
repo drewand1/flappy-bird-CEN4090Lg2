@@ -6,6 +6,8 @@
 #include "string"
 #include "playing.h"
 #include "background.h"
+#include <iostream>
+using namespace std;
 
 GameStatus GameStatuses::playing = {
 	.keyPressed = keyPressedPlaying,
@@ -39,6 +41,7 @@ void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 	}
 
 	// Draw Score and Lives
+	// TODO: make it so text only redraws when score or lives change; low pri
 	std::string uiString = "Score: " + std::to_string(game.score) + "\nLives: " + std::to_string(game.health);
 	sf::Text uiText(gameFont, uiString, 16);
 	uiText.setFillColor(sf::Color::White);
@@ -47,7 +50,7 @@ void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 
 	// Calculate position dynamically based on the text's actual width
 	sf::FloatRect textBounds = uiText.getLocalBounds();
-	uiText.setPosition({ window.getSize().x - textBounds.size.x - 20.0f, 20.0f });
+	uiText.setPosition({ VIEW_WIDTH - textBounds.size.x - 20.0f, 20.0f });
 
 	window.draw(uiText);
 }

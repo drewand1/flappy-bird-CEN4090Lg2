@@ -1,6 +1,7 @@
 #include <cmath>
 #include <initializer_list>
 #include "background.h"
+#include "gameconfig.h"
 
 constexpr float SCALE = 3.0f; // matches the ground/bird/pipe sprites
 constexpr float SWAY = 0.1f;  // 0 turns the vertical parallax off
@@ -36,7 +37,7 @@ void initBackground() {
 }
 
 void drawBackground(sf::RenderWindow& window, float scrollDistance, float cameraHeight) {
-	sf::Vector2u win = window.getSize();
+	sf::Vector2f win(VIEW_WIDTH, VIEW_HEIGHT);
 	sf::Vector2u skySz = skyTex.getSize();
 
 	sf::Sprite sky(skyTex);
