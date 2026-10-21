@@ -5,8 +5,7 @@
 #include "gameconfig.h"
 #include "string"
 #include "playing.h"
-#include <iostream>
-using namespace std;
+#include "background.h"
 
 GameStatus GameStatuses::playing = {
 	.keyPressed = keyPressedPlaying,
@@ -20,6 +19,9 @@ void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event) {
 }
 
 void drawPlaying(const GameState& game, sf::RenderWindow& window) {
+	// Draw background first so its behind everything
+	drawBackground(window, game.scrollDistance, game.bird.pos.y);
+
 	// Draw bird
 	birdSprite.setPosition(normToScreen(game.bird.pos, window));
 	birdSprite.setRotation(sf::degrees(std::clamp(-40 - (game.bird.yVel - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
@@ -37,7 +39,6 @@ void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 	}
 
 	// Draw Score and Lives
-	// TODO: make it so text only redraws when score or lives change; low pri
 	std::string uiString = "Score: " + std::to_string(game.score) + "\nLives: " + std::to_string(game.health);
 	sf::Text uiText(gameFont, uiString, 16);
 	uiText.setFillColor(sf::Color::White);
@@ -46,7 +47,7 @@ void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 
 	// Calculate position dynamically based on the text's actual width
 	sf::FloatRect textBounds = uiText.getLocalBounds();
-	uiText.setPosition({ VIEW_WIDTH - textBounds.size.x - 20.0f, 20.0f });
+	uiText.setPosition({ window.getSize().x - textBounds.size.x - 20.0f, 20.0f });
 
 	window.draw(uiText);
 }

@@ -12,6 +12,7 @@ add_executable(prog
 	src/collision.cpp
 	src/playing.cpp
 	src/gameover.cpp
+	src/background.cpp
 )
 target_compile_features(prog PRIVATE cxx_std_23)
 target_include_directories(prog PRIVATE include)

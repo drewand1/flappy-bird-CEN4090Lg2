@@ -1,3 +1,23 @@
+/*
+
+Basic flappy bird skeleton
+
+To do:
+[x]	Menu, score UI
+[x]	Score keeping
+[x]	Collision detection (floor & pipe)
+[x]	Game over state
+[]	Sounds
+[]	Parallax scrolling effect
+
+Known issues:
+- Pipe gap position is determined by window height. If window is resized to be
+	shorter, a pipe currently on screen might become unpassable because its
+	position was determined based on the previous screen height. Frankly low
+	priority bc who tf downsizes their window in the middle of flappy bird?
+
+*/
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -11,10 +31,12 @@
 #include "screencalc.h"
 #include "menu.h"
 #include "playing.h"
+#include "background.h"
 
 int main() {
 	srand(time(NULL));
 	initGameDraw();
+	initBackground();
 	initMenu();
 
 	sf::RenderWindow window(sf::VideoMode({ 640, 480 }), "RAAAAAAH");
@@ -25,8 +47,6 @@ int main() {
 	game.window = &window;
 	resetGame(game);
 
-	setLetterboxView(window);
-
 	while (window.isOpen()) {
 		while (const std::optional event = window.pollEvent()) {
 
@@ -34,7 +54,8 @@ int main() {
 				window.close();
 
 			if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-				setLetterboxView(window);
+				sf::FloatRect view({ 0, 0 }, sf::Vector2f(resized->size));
+				window.setView(sf::View(view));
 			}
 
 			// Keyboard Events
