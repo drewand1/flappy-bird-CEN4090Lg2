@@ -21,9 +21,12 @@ void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event) {
 
 void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 	// Draw bird
-	birdSprite.setPosition(normToScreen(game.bird.pos, window));
-	birdSprite.setRotation(sf::degrees(std::clamp(-40 - (game.bird.yVel - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
-	window.draw(birdSprite);	
+	float timeSinceHit = (game.clock.getElapsedTime() - game.lastHitTime).asSeconds();
+	if (!game.alive || timeSinceHit >= 1.0f || static_cast<int>(timeSinceHit * 10.0f) % 2 == 0) {
+		birdSprite.setPosition(normToScreen(game.bird.pos, window));
+		birdSprite.setRotation(sf::degrees(std::clamp(-40 - (game.bird.yVel - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
+		window.draw(birdSprite);
+	}
 		
 	// Draw pipes
 	for (int i = 0; i < game.pipes.size(); i++) {

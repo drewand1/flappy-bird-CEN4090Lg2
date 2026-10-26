@@ -12,6 +12,7 @@ void resetGame(GameState& game) {
 	game.status = GameStatuses::menu;
 	game.alive = true;
 	game.health = 3;
+	game.lastHitTime = sf::seconds(-1.0f);
 	game.bird.pos = {0.0f, 0.0f};
 	game.bird.yVel = 0.0f;
 	game.pipes.clear();
@@ -79,6 +80,30 @@ void runTickLogic(GameState& game, sf::Window& window) {
 
 	// Collision detection
 	if (checkCollisions(game, sf::Vector2u(VIEW_WIDTH, VIEW_HEIGHT))) {
+		if (game.bird.pos.y - BIRD_RADIUS <= -VIEW_HEIGHT / 2.0f) {
+			game.bird.pos.y = -VIEW_HEIGHT / 2.0f + BIRD_RADIUS;
+			game.bird.yVel = 0.0f;
+		}
+		else if (game.bird.pos.y + BIRD_RADIUS >= VIEW_HEIGHT / 2.0f) {
+			game.bird.pos.y = VIEW_HEIGHT / 2.0f - BIRD_RADIUS;
+			game.bird.yVel = 0.0f;
+		}
+
+		for (auto const& pipe : game.pipes) {
+			if (checkPipeCollision(game.bird, pipe)) {
+				float upperPipeBottom = pipe.gapPos + pipe.gapHeight / 2.0f;
+				float lowerPipeTop = pipe.gapPos - pipe.gapHeight / 2.0f;
+				if (game.bird.pos.y - BIRD_RADIUS <= lowerPipeTop) {
+					game.bird.pos.y = lowerPipeTop + BIRD_RADIUS;
+					game.bird.yVel = 0.0f;
+				}
+				else if (game.bird.pos.y + BIRD_RADIUS >= upperPipeBottom) {
+					game.bird.pos.y = upperPipeBottom - BIRD_RADIUS;
+					game.bird.yVel = 0.0f;
+				}
+			}
+		}
+
 		// 1-second Invulnerability Cooldown
 		if ((now - game.lastHitTime).asSeconds() > 1.0f) {
 			game.health--;
@@ -87,15 +112,6 @@ void runTickLogic(GameState& game, sf::Window& window) {
 			if (game.health <= 0) {
 				game.alive = false;
 				game.status = GameStatuses::gameOver; // Trigger Game Over screen
-
-				if (game.bird.pos.y - BIRD_RADIUS <= -VIEW_HEIGHT / 2.0f) {
-					game.bird.pos.y = -VIEW_HEIGHT / 2.0f + BIRD_RADIUS;
-					game.bird.yVel = 0.0f;
-				}
-				else if (game.bird.pos.y + BIRD_RADIUS >= VIEW_HEIGHT / 2.0f) {
-					game.bird.pos.y = VIEW_HEIGHT / 2.0f - BIRD_RADIUS;
-					game.bird.yVel = 0.0f;
-				}
 			}
 		}
 	}
