@@ -11,10 +11,12 @@
 #include "screencalc.h"
 #include "menu.h"
 #include "playing.h"
+#include "background.h"
 
 int main() {
 	srand(time(NULL));
 	initGameDraw();
+	initBackground();
 	initMenu();
 
 	sf::RenderWindow window(sf::VideoMode({ 640, 480 }), "RAAAAAAH");

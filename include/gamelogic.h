@@ -44,6 +44,7 @@ struct GameState {
 	bool alive = false;
 	unsigned int health = 3;
 	sf::Time lastHitTime;
+	float scrollDistance = 0.0f; // how far the world has moved, used for the background
 	sf::RenderWindow* window = nullptr;
 };
 

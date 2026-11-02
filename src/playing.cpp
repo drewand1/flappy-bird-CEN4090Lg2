@@ -5,6 +5,7 @@
 #include "gameconfig.h"
 #include "string"
 #include "playing.h"
+#include "background.h"
 #include <iostream>
 using namespace std;
 
@@ -20,6 +21,9 @@ void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event) {
 }
 
 void drawPlaying(const GameState& game, sf::RenderWindow& window) {
+	// Draw background first so its behind everything
+	drawBackground(window, game.scrollDistance, game.bird.pos.y);
+
 	// Draw bird
 	float timeSinceHit = (game.clock.getElapsedTime() - game.lastHitTime).asSeconds();
 	if (!game.alive || timeSinceHit >= 1.0f || static_cast<int>(timeSinceHit * 10.0f) % 2 == 0) {
