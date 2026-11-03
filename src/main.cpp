@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <cenui.h>
 #include "gameconfig.h"
 #include "gamelogic.h"
 #include "gamedraw.h"
@@ -47,8 +48,13 @@ int main() {
 
 			// Mouse Events
 			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonPressed>()) {
+				// need some frame manager logic here
 				if (game.status.mouseButtonPressed)
 					game.status.mouseButtonPressed(game, mouseClick);
+			}
+
+			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonReleased>()) {
+				// neeed some frame manager logic here
 			}
 		}
 
@@ -59,6 +65,8 @@ int main() {
 		window.clear();
 		if (game.status.draw)
 			game.status.draw(game, window);
+
+		// draw ui
 		window.display();
 	}
 

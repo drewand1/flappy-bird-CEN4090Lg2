@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.28)
 project(group2project LANGUAGES CXX)
 
+include(FetchContent)
+
+FetchContent_Declare(
+	cenui
+	GIT_REPOSITORY https://github.com/drewand1/cenui/
+	GIT_TAG v1.0.0
+)
+FetchContent_MakeAvailable(cenui)
+
 find_package(SFML 3 REQUIRED COMPONENTS Graphics)
 
 add_executable(prog
@@ -17,3 +26,4 @@ add_executable(prog
 target_compile_features(prog PRIVATE cxx_std_23)
 target_include_directories(prog PRIVATE include)
 target_link_libraries(prog PRIVATE SFML::Graphics)
+target_link_libraries(prog PRIVATE cenui)
