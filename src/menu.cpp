@@ -1,16 +1,15 @@
 #include <cmath>
 #include "gameconfig.h"
 #include "menu.h"
+#include "background.h"
 
 // Loads its own copies of the bird/pipe textures so this file doesn't
 // depend on (or need changes to) gamedraw.cpp. Once we have a proper
 // asset-loading system these can be pointed at shared textures instead.
 static sf::Texture menuBirdTex("rsc/textures/bird.png");
 static sf::Texture menuPipeTex("rsc/textures/pipe.png");
-static sf::Texture menuGroundTex("rsc/textures/ground.png");
 static sf::Sprite menuBirdSprite(menuBirdTex);
 static sf::Sprite menuPipeSprite(menuPipeTex);
-static sf::Sprite menuGroundSprite(menuGroundTex);
 static sf::Font menuFont("rsc/fonts/PressStart2P-Regular.ttf");
 
 // Defining the game status
@@ -25,8 +24,6 @@ GameStatus GameStatuses::menu = {
 void initMenu() {
 	menuBirdTex.setSmooth(false);
 	menuPipeTex.setSmooth(false);
-	menuGroundTex.setSmooth(false);
-	menuGroundTex.setRepeated(true);
 
 	menuBirdSprite.setTexture(menuBirdTex);
 	menuBirdSprite.setScale({2.0f, 2.0f});
@@ -35,14 +32,16 @@ void initMenu() {
 	menuPipeSprite.setTexture(menuPipeTex);
 	menuPipeSprite.setScale({4.0f, 10.0f});
 	menuPipeSprite.setOrigin({8.0f, static_cast<float>(menuPipeSprite.getLocalBounds().size.y)});
-
-	menuGroundSprite.setTexture(menuGroundTex);
 }
 
 void keyPressedMenu(GameState& game, const sf::Event::KeyPressed* event) {
 	if (event->scancode == sf::Keyboard::Scancode::Space) {
 		resetGame(game);
 		playGame(game);
+	}
+	// B cycles through the background themes, wrapping back to the first one
+	else if (event->scancode == sf::Keyboard::Scancode::B) {
+		game.bgTheme = (game.bgTheme + 1) % THEME_COUNT;
 	}
 }
 
@@ -51,33 +50,9 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	sf::Vector2u winSz = window.getSize();
 	float t = game.clock.getElapsedTime().asSeconds();
 
-	// Sky background
-	sf::RectangleShape sky(sf::Vector2f{VIEW_WIDTH, VIEW_HEIGHT});
-	sky.setPosition({0.f, 0.f});
-	sky.setFillColor(sf::Color(78, 192, 202));
-	window.draw(sky);
-
-	// Ground strip - tiled grass/dirt texture, repeated across the window width.
-	// Scale controls how "chunky" the pixel art looks (matches the general
-	// weight of the bird/pipe sprites, which are also scaled up from 16px).
-	float groundScale = 3.0f;
-	float groundHeight = 16.0f * groundScale;
-
-	// Solid backing fill first: the tile art has small transparent notches
-	// along its jagged silhouette that don't perfectly line up where the
-	// repeat wraps, which reads as visible seams. A solid dirt-colored
-	// rectangle underneath means any gap shows matching dirt color instead
-	// of whatever's behind it.
-	sf::RectangleShape groundBacking({static_cast<float>(VIEW_WIDTH), groundHeight});
-	groundBacking.setPosition({0.f, VIEW_HEIGHT - groundHeight});
-	groundBacking.setFillColor(sf::Color(122, 68, 74));
-	window.draw(groundBacking);
-
-	unsigned int groundRepeatWidth = static_cast<unsigned int>(std::ceil(VIEW_WIDTH / groundScale));
-	menuGroundSprite.setTextureRect(sf::IntRect({0, 0}, {static_cast<int>(groundRepeatWidth), 16}));
-	menuGroundSprite.setScale({groundScale, groundScale});
-	menuGroundSprite.setPosition({0.f, VIEW_HEIGHT - groundHeight});
-	window.draw(menuGroundSprite);
+	// Background preview - same one as gameplay, slowly scrolling so you can
+	// see what the picked theme looks like before starting
+	drawBackground(window, game.bgTheme, t * 60.0f, 0.0f);
 
 	// Decorative pipes flanking the menu. Rotated 180° so the wide cap
 	// faces up (the source texture has its cap at the bottom, anchored
@@ -85,7 +60,7 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	// Height is capped at half the window so there's clear open sky
 	// above them -- handy since the first real gameplay pipe can start
 	// roughly where these leave off once we transition out of the menu.
-	float groundTopY = VIEW_HEIGHT - groundHeight;
+	float groundTopY = VIEW_HEIGHT - 21.0f; // top of the ground strip drawn by background.cpp
 	float pipeVisibleHeight = VIEW_HEIGHT * 0.5f;
 	float pipeTexHeight = static_cast<float>(menuPipeTex.getSize().y);
 	float pipeScaleY = pipeVisibleHeight / pipeTexHeight;
@@ -125,4 +100,14 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	prompt.setOrigin(promptBounds.position + promptBounds.size / 2.0f);
 	prompt.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.68f});
 	window.draw(prompt);
+
+	// Background option, shows which theme is picked
+	sf::Text option(menuFont, "[B] Background: " + themes[game.bgTheme].name, static_cast<unsigned int>(VIEW_HEIGHT * 0.03f));
+	option.setFillColor(sf::Color::White);
+	option.setOutlineColor(sf::Color::Black);
+	option.setOutlineThickness(2.f);
+	sf::FloatRect optionBounds = option.getLocalBounds();
+	option.setOrigin(optionBounds.position + optionBounds.size / 2.0f);
+	option.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.78f});
+	window.draw(option);
 }

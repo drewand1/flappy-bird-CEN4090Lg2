@@ -22,7 +22,7 @@ void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event) {
 
 void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 	// Draw background first so its behind everything
-	drawBackground(window, game.scrollDistance, game.bird.pos.y);
+	drawBackground(window, game.bgTheme, game.scrollDistance, game.bird.pos.y);
 
 	// Draw bird
 	float timeSinceHit = (game.clock.getElapsedTime() - game.lastHitTime).asSeconds();
