@@ -4,14 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-constexpr int THEME_COUNT = 4; // bump if you add a theme in background.cpp
+constexpr int THEME_COUNT = 4;
 
 struct Theme {
 	std::string name;
-	std::string folder; // in rsc/textures/backgrounds/
-	float scale;        // 3 for pixel art, around 1 for hi-res
+	std::string folder; 
+	float scale;
 	sf::Texture sky;
-	sf::Texture tex[4]; // back, middle, front, ground
+	sf::Texture tex[4];
 	bool has[4] = {};
 	sf::Color under[4];
 };

@@ -6,6 +6,7 @@
 #include "string"
 #include "playing.h"
 #include "background.h"
+#include "pipes.h"
 #include <iostream>
 using namespace std;
 
@@ -35,12 +36,13 @@ void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 	// Draw pipes
 	for (int i = 0; i < game.pipes.size(); i++) {
 		const Pipe& pipe = game.pipes[i];
-		pipeSprite.setRotation(sf::degrees(0));
-		pipeSprite.setPosition(normToScreen({pipe.xPos, pipe.gapPos + pipe.gapHeight / 2.0f}, window));
-		window.draw(pipeSprite);
-		pipeSprite.setRotation(sf::degrees(180));
-		pipeSprite.setPosition(normToScreen({pipe.xPos, pipe.gapPos - pipe.gapHeight / 2.0f}, window));
-		window.draw(pipeSprite);
+		float gapTop = pipe.gapPos + pipe.gapHeight / 2.0f;
+		float gapBottom = pipe.gapPos - pipe.gapHeight / 2.0f;
+
+		// top one goes from the gap up to the top of the screen,
+		// bottom one goes from the gap down to the ground (21 is the ground strip in background.cpp)
+		drawPipe(window, game.pipeSkin, normToScreen({pipe.xPos, gapTop}, window), false, VIEW_HEIGHT / 2.0f - gapTop);
+		drawPipe(window, game.pipeSkin, normToScreen({pipe.xPos, gapBottom}, window), true, gapBottom + VIEW_HEIGHT / 2.0f - 21.0f);
 	}
 
 	// Draw Score and Lives
