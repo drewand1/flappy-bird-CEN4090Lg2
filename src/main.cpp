@@ -13,11 +13,13 @@
 #include "menu.h"
 #include "playing.h"
 #include "background.h"
+#include "pipes.h"
 
 int main() {
 	srand(time(NULL));
 	initGameDraw();
 	initBackground();
+	initPipes();
 	initMenu();
 
 	sf::RenderWindow window(sf::VideoMode({ 640, 480 }), "RAAAAAAH");

@@ -46,6 +46,7 @@ struct GameState {
 	sf::Time lastHitTime;
 	float scrollDistance = 0.0f; // how far the world has moved, used for the background
 	int bgTheme = 0; // which background theme is picked in the menu, doesnt get reset
+	int pipeSkin = 0; // same thing for the pipes
 	sf::RenderWindow* window = nullptr;
 };
 

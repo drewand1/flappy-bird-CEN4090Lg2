@@ -6,9 +6,7 @@
 
 extern sf::Font gameFont;
 extern sf::Texture birdTex;
-extern sf::Texture pipeTex;
 extern sf::Sprite birdSprite;
-extern sf::Sprite pipeSprite;
 
 void initGameDraw();
 
