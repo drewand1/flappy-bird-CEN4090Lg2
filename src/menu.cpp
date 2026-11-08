@@ -3,6 +3,7 @@
 #include "menu.h"
 #include "background.h"
 #include "pipes.h"
+#include "birdselect.h"
 
 // Loads its own copy of the bird texture so this file doesn't depend on
 // gamedraw.cpp. The pipes come from pipes.cpp so the menu shows
@@ -14,7 +15,7 @@ static sf::Font menuFont("rsc/fonts/PressStart2P-Regular.ttf");
 // Defining the game status
 GameStatus GameStatuses::menu = {
 	.keyPressed = keyPressedMenu,
-	.mouseButtonPressed = nullptr,
+	.mouseButtonPressed = mouseBirdButton,
 	.draw = drawMenu
 };
 
@@ -84,6 +85,7 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 
 	// Bobbing bird, front and center
 	float bob = std::sin(t * 2.5f) * 10.0f;
+	menuBirdSprite.setTexture(birdSkinTexture(game.birdSkin));
 	menuBirdSprite.setRotation(sf::degrees(0));
 	menuBirdSprite.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.38f + bob});
 	window.draw(menuBirdSprite);
@@ -128,4 +130,6 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	pipeOption.setOrigin(pipeOptionBounds.position + pipeOptionBounds.size / 2.0f);
 	pipeOption.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.84f});
 	window.draw(pipeOption);
+	// Button that opens the bird picker
+   	drawBirdButton(game, window);
 }
