@@ -7,6 +7,7 @@
 #include "playing.h"
 #include "background.h"
 #include "pipes.h"
+#include "birdselect.h"
 #include <iostream>
 using namespace std;
 
@@ -28,6 +29,7 @@ void drawPlaying(const GameState& game, sf::RenderWindow& window) {
 	// Draw bird
 	float timeSinceHit = (game.clock.getElapsedTime() - game.lastHitTime).asSeconds();
 	if (!game.alive || timeSinceHit >= 1.0f || static_cast<int>(timeSinceHit * 10.0f) % 2 == 0) {
+		birdSprite.setTexture(birdSkinTexture(game.birdSkin));
 		birdSprite.setPosition(normToScreen(game.bird.pos, window));
 		birdSprite.setRotation(sf::degrees(std::clamp(-40 - (game.bird.yVel - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
 		window.draw(birdSprite);
