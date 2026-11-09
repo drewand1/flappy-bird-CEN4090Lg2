@@ -18,8 +18,10 @@ GameStatus GameStatuses::playing = {
 };
 
 void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event) {
-	if (game.alive)
+	if (game.alive){
 		game.bird.yVel = BIRD_JUMP_VEL;
+		game.flapSound.play(); // Plays the flap sound when the bird jumps
+	}
 }
 
 void drawPlaying(const GameState& game, sf::RenderWindow& window) {

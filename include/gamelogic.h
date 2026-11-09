@@ -3,6 +3,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 
 /*enum class GameStatus {
@@ -34,6 +35,7 @@ struct Pipe {
 };
 
 struct GameState {
+	GameState() = default;
 	GameStatus status;
 	Bird bird;
 	std::vector<Pipe> pipes;
@@ -49,6 +51,16 @@ struct GameState {
 	int pipeSkin = 0; // same thing for the 
 	int birdSkin = 0;
 	sf::RenderWindow* window = nullptr;
+	
+	// Sounds and Music
+	sf::SoundBuffer flapBuffer;
+	sf::Sound flapSound{flapBuffer};
+	sf::Music menuMusic;
+	sf::Music gameOverMusic;
+	sf::SoundBuffer hitBuffer;
+	sf::Sound hitSound{hitBuffer};
+	sf::SoundBuffer coinBuffer;
+	sf::Sound coinSound{coinBuffer};
 };
 
 void runTickLogic(GameState& game, sf::Window& window);

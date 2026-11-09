@@ -28,6 +28,24 @@ int main() {
 
 	GameState game;
 	game.window = &window;
+
+	// Load audio files 
+	if (game.flapBuffer.loadFromFile("rsc/audio/flap.wav")) {
+    	game.flapSound.setBuffer(game.flapBuffer);
+	}
+	if (game.hitBuffer.loadFromFile("rsc/audio/hitHurt.wav")) {
+   		game.hitSound.setBuffer(game.hitBuffer);
+	}
+	if (game.coinBuffer.loadFromFile("rsc/audio/pickupCoin.wav")) {
+    	game.coinSound.setBuffer(game.coinBuffer);
+	}
+	if (game.menuMusic.openFromFile("rsc/audio/mainMenu.wav")) {
+    	game.menuMusic.setLooping(true);
+	}
+	if (game.gameOverMusic.openFromFile("rsc/audio/gameover.wav")) {
+		game.gameOverMusic.setLooping(false);
+	}
+
 	resetGame(game);
 
 	setLetterboxView(window);

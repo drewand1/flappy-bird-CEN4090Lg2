@@ -7,9 +7,17 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <SFML/Audio.hpp>
 
 void resetGame(GameState& game) {
 	game.status = GameStatuses::menu;
+	game.gameOverMusic.stop();
+
+	// Check to restart menu music
+if (game.menuMusic.getStatus() != sf::SoundSource::Status::Playing) {
+    game.menuMusic.play(); 
+}
+
 	game.alive = true;
 	game.health = 3;
 	game.lastHitTime = sf::seconds(-1.0f);
@@ -22,6 +30,7 @@ void resetGame(GameState& game) {
 
 void playGame(GameState& game) {
 	game.status = GameStatuses::playing;
+	game.menuMusic.stop(); // Stop the menu music when the game starts
 	game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
 	game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
 }
@@ -64,6 +73,7 @@ void runTickLogic(GameState& game, sf::Window& window) {
 		if (!pipe.passed && pipe.xPos + PIPE_HALF_WIDTH < game.bird.pos.x - BIRD_RADIUS) {
 			pipe.passed = true;
 			game.score++;
+			game.coinSound.play(); // Play the coin sound when the bird passes a pipe
 		}
 	}
 
@@ -112,10 +122,12 @@ void runTickLogic(GameState& game, sf::Window& window) {
 		if ((now - game.lastHitTime).asSeconds() > 1.0f) {
 			game.health--;
 			game.lastHitTime = now;
+			game.hitSound.play(); // Play the hit sound when the bird collides with a pipe
 
 			if (game.health <= 0) {
 				game.alive = false;
 				game.status = GameStatuses::gameOver; // Trigger Game Over screen
+				game.gameOverMusic.play(); // Play the game over music
 			}
 		}
 	}
