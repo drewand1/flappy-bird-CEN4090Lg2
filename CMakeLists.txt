@@ -10,7 +10,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(cenui)
 
-find_package(SFML 3 REQUIRED COMPONENTS Graphics)
+find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio)
 
 add_executable(prog
 	src/main.cpp
@@ -29,3 +29,10 @@ target_compile_features(prog PRIVATE cxx_std_23)
 target_include_directories(prog PRIVATE include)
 target_link_libraries(prog PRIVATE SFML::Graphics)
 target_link_libraries(prog PRIVATE cenui)
+target_link_libraries(prog PRIVATE SFML::Audio)
+
+# Copy the rsc folder to the output directory so the executable can find it
+add_custom_command(TARGET prog POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/rsc
+    $<TARGET_FILE_DIR:prog>/rsc)
