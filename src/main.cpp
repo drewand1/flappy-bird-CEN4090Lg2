@@ -14,6 +14,7 @@
 #include "playing.h"
 #include "background.h"
 #include "pipes.h"
+#include "gamemodes.h"
 
 int main() {
 	srand(time(NULL));
@@ -80,6 +81,9 @@ int main() {
 
 		if (game.status.draw == drawPlaying) { // Disgustingly hacky but if it works it works
 			runTickLogic(game, window);
+		}
+		else if (game.status.draw == drawFlapHunt) {
+			runFlapHuntTick(game, window);
 		}
 
 		window.clear();

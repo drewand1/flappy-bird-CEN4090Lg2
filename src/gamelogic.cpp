@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "playing.h"
 #include "gameover.h"
+#include "gamemodes.h"
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
@@ -29,10 +30,26 @@ if (game.menuMusic.getStatus() != sf::SoundSource::Status::Playing) {
 }
 
 void playGame(GameState& game) {
-	game.status = GameStatuses::playing;
 	game.menuMusic.stop(); // Stop the menu music when the game starts
 	game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
-	game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
+	game.lastTick = game.clock.getElapsedTime(); // avoids a big dt jump on the first tick of gameplay
+
+	switch (game.gameMode) {
+		case MODE_FLAPPY_CRUSH:
+			game.status = GameStatuses::flappyCrush;
+			break;
+		case MODE_DARTS:
+			game.status = GameStatuses::darts;
+			break;
+		case MODE_FLAP_HUNT:
+			initFlapHunt(game);
+			game.status = GameStatuses::flapHunt;
+			break;
+		case MODE_CLASSIC:
+		default:
+			game.status = GameStatuses::playing;
+			break;
+	}
 }
 
 void runTickLogic(GameState& game, sf::Window& window) {

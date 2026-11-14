@@ -6,12 +6,6 @@
 #include <SFML/Audio.hpp>
 #include <vector>
 
-/*enum class GameStatus {
-	Menu,
-	Playing,
-	GameOver
-};
-*/
 
 struct GameState; // Forward Declaration for GameStatus
 
@@ -50,6 +44,7 @@ struct GameState {
 	int bgTheme = 0; // which background theme is picked in the menu, doesnt get reset
 	int pipeSkin = 0; // same thing for the 
 	int birdSkin = 0;
+	int gameMode = 0; // which game mode is picked in the menu, doesnt get reset
 	sf::RenderWindow* window = nullptr;
 	
 	// Sounds and Music
@@ -62,6 +57,15 @@ struct GameState {
 	sf::SoundBuffer coinBuffer;
 	sf::Sound coinSound{coinBuffer};
 };
+
+namespace GameStatuses {
+	extern GameStatus menu;
+	extern GameStatus playing;    // Classic Flappy Bird
+	extern GameStatus flappyCrush;
+	extern GameStatus darts;
+	extern GameStatus flapHunt;
+	extern GameStatus gameOver;
+}
 
 void runTickLogic(GameState& game, sf::Window& window);
 void resetGame(GameState& game);

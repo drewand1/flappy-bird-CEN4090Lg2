@@ -24,7 +24,9 @@ add_executable(prog
 	src/background.cpp
 	src/pipes.cpp
 	src/birdselect.cpp
+	src/gamemodes.cpp
 )
+
 target_compile_features(prog PRIVATE cxx_std_23)
 target_include_directories(prog PRIVATE include)
 target_link_libraries(prog PRIVATE SFML::Graphics)
