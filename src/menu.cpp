@@ -4,6 +4,7 @@
 #include "background.h"
 #include "pipes.h"
 #include "birdselect.h"
+#include "gamemodes.h"
 
 // Loads its own copy of the bird texture so this file doesn't depend on
 // gamedraw.cpp. The pipes come from pipes.cpp so the menu shows
@@ -41,6 +42,10 @@ void keyPressedMenu(GameState& game, const sf::Event::KeyPressed* event) {
 	// P does the same for the pipe skins
 	else if (event->scancode == sf::Keyboard::Scancode::P) {
 		game.pipeSkin = (game.pipeSkin + 1) % PIPE_COUNT;
+	}
+	// M cycles through the game modes, wrapping back to the first one
+	else if (event->scancode == sf::Keyboard::Scancode::M) {
+		game.gameMode = (game.gameMode + 1) % GAME_MODE_COUNT;
 	}
 }
 
@@ -130,6 +135,17 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	pipeOption.setOrigin(pipeOptionBounds.position + pipeOptionBounds.size / 2.0f);
 	pipeOption.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.84f});
 	window.draw(pipeOption);
+
+	// Gamemode option
+	sf::Text modeOption(menuFont, "[M] Mode: " + gameModeNames[game.gameMode], static_cast<unsigned int>(VIEW_HEIGHT * 0.03f));
+	modeOption.setFillColor(sf::Color::White);
+	modeOption.setOutlineColor(sf::Color::Black);
+	modeOption.setOutlineThickness(2.f);
+	sf::FloatRect modeOptionBounds = modeOption.getLocalBounds();
+	modeOption.setOrigin(modeOptionBounds.position + modeOptionBounds.size / 2.0f);
+	modeOption.setPosition({VIEW_WIDTH / 2.0f, VIEW_HEIGHT * 0.90f});
+	window.draw(modeOption);
+
 	// Button that opens the bird picker
    	drawBirdButton(game, window);
 }
