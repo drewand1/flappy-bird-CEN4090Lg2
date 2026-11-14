@@ -1,16 +1,14 @@
 #include "gameconfig.h"
 #include "gamelogic.h"
 #include "collision.h"
-#include "menu.h"
-#include "playing.h"
-#include "gameover.h"
+#include "gamestatuses.h"
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
 #include <SFML/Audio.hpp>
 
 void resetGame(GameState& game) {
-	game.status = GameStatuses::menu;
+	setGameStatus(game, GameStatuses::menu);
 	game.gameOverMusic.stop();
 
 	// Check to restart menu music
@@ -29,106 +27,18 @@ if (game.menuMusic.getStatus() != sf::SoundSource::Status::Playing) {
 }
 
 void playGame(GameState& game) {
-	game.status = GameStatuses::playing;
+	setGameStatus(game, GameStatuses::playing);
 	game.menuMusic.stop(); // Stop the menu music when the game starts
 	game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
 	game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
 }
 
-void runTickLogic(GameState& game, sf::Window& window) {
-	sf::Time now = game.clock.getElapsedTime();
-	float dt = (now - game.lastTick).asSeconds();
-	game.lastTick = now;
+void setGameStatus(GameState& game, GameStatus status) {
+	if (game.status.exit)
+		game.status.exit(game);
 
-	sf::Vector2u winSz = window.getSize();
-	float winTop = static_cast<float>(winSz.y) / 2.0f;
-	float winBottom = -static_cast<float>(winSz.y) / 2.0f;
-	float winLeft = -static_cast<float>(winSz.x) / 2.0f;
-
-	// let dead bird fall to winBottom
-	if (!game.alive) {
-		if (game.bird.pos.y > -VIEW_HEIGHT / 2 + BIRD_RADIUS) {
-			game.bird.pos.y += game.bird.yVel * dt;
-			game.bird.yVel -= GRAVITY_CONST * dt;
-			if (game.bird.pos.y <= -VIEW_HEIGHT / 2 + BIRD_RADIUS) {
-				game.bird.pos.y = -VIEW_HEIGHT / 2 + BIRD_RADIUS;
-				game.bird.yVel = 0.0f;
-			}
-		}
-		return;
-	}
-
-	// Update bird
-	game.bird.pos.x = -VIEW_WIDTH / 2.0f + 80.0f;
-	game.bird.pos.y += game.bird.yVel * dt;
-	game.bird.yVel -= GRAVITY_CONST * dt;
-
-	// Move background
-	game.scrollDistance += PIPE_BASE_SPEED * dt;
-
-	// Update pipes
-	for (auto& pipe : game.pipes) {
-		pipe.xPos -= PIPE_BASE_SPEED * dt;
-
-		if (!pipe.passed && pipe.xPos + PIPE_HALF_WIDTH < game.bird.pos.x - BIRD_RADIUS) {
-			pipe.passed = true;
-			game.score++;
-			game.coinSound.play(); // Play the coin sound when the bird passes a pipe
-		}
-	}
-
-	// despawn passed pipes (left of screen)
-	std::erase_if(game.pipes, [winLeft](const Pipe& pipe) {
-		return pipe.xPos + PIPE_HALF_WIDTH < -VIEW_WIDTH / 2.0f;
-		});
-
-	// Spawn pipe
-	if ((now - game.lastPipeSpawn).asSeconds() > PIPE_BASE_SPAWN_COOLDOWN) {
-		Pipe pipe;
-		pipe.gapHeight = PIPE_BASE_GAP_SIZE;
-		pipe.gapPos = static_cast<float>(rand() % static_cast<int>(VIEW_HEIGHT * 0.8f) - static_cast<int>(0.4f * VIEW_HEIGHT));
-		pipe.xPos = VIEW_WIDTH / 2.0f + PIPE_HALF_WIDTH;
-		game.pipes.push_back(pipe);
-		game.lastPipeSpawn = now;
-	}
-
-	// Collision detection
-	if (checkCollisions(game, sf::Vector2u(VIEW_WIDTH, VIEW_HEIGHT))) {
-		if (game.bird.pos.y - BIRD_RADIUS <= -VIEW_HEIGHT / 2.0f) {
-			game.bird.pos.y = -VIEW_HEIGHT / 2.0f + BIRD_RADIUS;
-			game.bird.yVel = 0.0f;
-		}
-		else if (game.bird.pos.y + BIRD_RADIUS >= VIEW_HEIGHT / 2.0f) {
-			game.bird.pos.y = VIEW_HEIGHT / 2.0f - BIRD_RADIUS;
-			game.bird.yVel = 0.0f;
-		}
-
-		for (auto const& pipe : game.pipes) {
-			if (checkPipeCollision(game.bird, pipe)) {
-				float upperPipeBottom = pipe.gapPos + pipe.gapHeight / 2.0f;
-				float lowerPipeTop = pipe.gapPos - pipe.gapHeight / 2.0f;
-				if (game.bird.pos.y - BIRD_RADIUS <= lowerPipeTop) {
-					game.bird.pos.y = lowerPipeTop + BIRD_RADIUS;
-					game.bird.yVel = 0.0f;
-				}
-				else if (game.bird.pos.y + BIRD_RADIUS >= upperPipeBottom) {
-					game.bird.pos.y = upperPipeBottom - BIRD_RADIUS;
-					game.bird.yVel = 0.0f;
-				}
-			}
-		}
-
-		// 1-second Invulnerability Cooldown
-		if ((now - game.lastHitTime).asSeconds() > 1.0f) {
-			game.health--;
-			game.lastHitTime = now;
-			game.hitSound.play(); // Play the hit sound when the bird collides with a pipe
-
-			if (game.health <= 0) {
-				game.alive = false;
-				game.status = GameStatuses::gameOver; // Trigger Game Over screen
-				game.gameOverMusic.play(); // Play the game over music
-			}
-		}
-	}
+	game.status = status;
+	
+	if (status.enter)
+		status.enter(game);
 }

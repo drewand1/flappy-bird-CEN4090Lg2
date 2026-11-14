@@ -1,9 +1,8 @@
 #include <cmath>
 #include "gameconfig.h"
-#include "menu.h"
+#include "gamestatuses.h"
 #include "background.h"
 #include "pipes.h"
-#include "birdselect.h"
 
 // Loads its own copy of the bird texture so this file doesn't depend on
 // gamedraw.cpp. The pipes come from pipes.cpp so the menu shows

@@ -17,13 +17,13 @@ add_executable(prog
 	src/screencalc.cpp
 	src/gamelogic.cpp
 	src/gamedraw.cpp
-	src/menu.cpp
 	src/collision.cpp
-	src/playing.cpp
-	src/gameover.cpp
 	src/background.cpp
 	src/pipes.cpp
-	src/birdselect.cpp
+	src/statuses/birdselect.cpp
+	src/statuses/menu.cpp
+	src/statuses/playing.cpp
+	src/statuses/gameover.cpp
 )
 target_compile_features(prog PRIVATE cxx_std_23)
 target_include_directories(prog PRIVATE include)

@@ -10,8 +10,7 @@
 #include "gamelogic.h"
 #include "gamedraw.h"
 #include "screencalc.h"
-#include "menu.h"
-#include "playing.h"
+#include "gamestatuses.h"
 #include "background.h"
 #include "pipes.h"
 
@@ -68,18 +67,18 @@ int main() {
 
 			// Mouse Events
 			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonPressed>()) {
-				// need some frame manager logic here
+				game.ui.handleMouseDown(window);
 				if (game.status.mouseButtonPressed)
 					game.status.mouseButtonPressed(game, mouseClick);
 			}
 
 			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonReleased>()) {
-				// neeed some frame manager logic here
+				game.ui.handleMouseUp(window);
 			}
 		}
 
-		if (game.status.draw == drawPlaying) { // Disgustingly hacky but if it works it works
-			runTickLogic(game, window);
+		if (game.status.tick) { // TODO: Find a way to tell whether is a playing state
+			game.status.tick(game, window);
 		}
 
 		window.clear();

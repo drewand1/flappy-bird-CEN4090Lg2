@@ -3,8 +3,7 @@
 #include <array>
 #include <string>
 #include <vector>
-#include "birdselect.h"
-#include "menu.h"
+#include "gamestatuses.h"
 #include "gamedraw.h"
 #include "gameconfig.h"
 
@@ -97,7 +96,7 @@ void mouseBirdButton(GameState& game, const sf::Event::MouseButtonPressed* event
 	if (event->button == sf::Mouse::Button::Left) {
 		sf::Vector2f mousePos = game.window->mapPixelToCoords(event->position);
 		if (buttonBounds.contains(mousePos))
-			game.status = GameStatuses::birdSelect;
+			setGameStatus(game, GameStatuses::birdSelect);
 	}
 }
 
@@ -106,7 +105,7 @@ void mouseBirdButton(GameState& game, const sf::Event::MouseButtonPressed* event
 void keyPressedBirdSelect(GameState& game, const sf::Event::KeyPressed* event) {
 	// Esc or Enter goes back to the main menu
 	if (event->scancode == sf::Keyboard::Scancode::Escape || event->scancode == sf::Keyboard::Scancode::Enter)
-		game.status = GameStatuses::menu;
+		setGameStatus(game, GameStatuses::menu);
 }
 
 void mouseBirdSelect(GameState& game, const sf::Event::MouseButtonPressed* event) {
@@ -116,7 +115,7 @@ void mouseBirdSelect(GameState& game, const sf::Event::MouseButtonPressed* event
 	sf::Vector2f mousePos = game.window->mapPixelToCoords(event->position);
 
 	if (doneBounds().contains(mousePos)) {
-		game.status = GameStatuses::menu;
+		setGameStatus(game, GameStatuses::menu);
 		return;
 	}
 
