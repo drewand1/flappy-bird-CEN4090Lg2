@@ -7,12 +7,6 @@
 #include <cenui.h>
 #include <vector>
 
-/*enum class GameStatus {
-	Menu,
-	Playing,
-	GameOver
-};
-*/
 
 struct GameState; // Forward Declaration for GameStatus
 
@@ -72,6 +66,15 @@ struct GameState {
 	sf::SoundBuffer coinBuffer;
 	sf::Sound coinSound{coinBuffer};
 };
+
+namespace GameStatuses {
+	extern GameStatus menu;
+	extern GameStatus playing;    // Classic Flappy Bird
+	extern GameStatus flappyCrush;
+	extern GameStatus darts;
+	extern GameStatus flapHunt;
+	extern GameStatus gameOver;
+}
 
 void setGameStatus(GameState& game, GameStatus status);
 void resetGame(GameState& game);

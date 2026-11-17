@@ -2,6 +2,7 @@
 #include "gamelogic.h"
 #include "collision.h"
 #include "gamestatuses.h"
+#include "gamemodes.h"
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>

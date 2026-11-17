@@ -26,6 +26,7 @@ add_executable(prog
 	src/statuses/playing.cpp
 	src/statuses/gameover.cpp
 )
+
 target_compile_features(prog PRIVATE cxx_std_23)
 target_include_directories(prog PRIVATE include)
 target_link_libraries(prog PRIVATE SFML::Graphics)
