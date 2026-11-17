@@ -6,7 +6,7 @@ include(FetchContent)
 FetchContent_Declare(
 	cenui
 	GIT_REPOSITORY https://github.com/drewand1/cenui/
-	GIT_TAG v1.0.0
+	GIT_TAG v1.0.1
 )
 FetchContent_MakeAvailable(cenui)
 
@@ -20,6 +20,7 @@ add_executable(prog
 	src/collision.cpp
 	src/background.cpp
 	src/pipes.cpp
+	src/uiinit.cpp
 	src/statuses/birdselect.cpp
 	src/statuses/menu.cpp
 	src/statuses/playing.cpp

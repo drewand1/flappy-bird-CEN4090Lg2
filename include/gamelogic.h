@@ -21,8 +21,8 @@ struct GameStatus {
 	void (*mouseButtonPressed)(GameState& game, const sf::Event::MouseButtonPressed* event) = nullptr;
 	void (*draw)(const GameState& game, sf::RenderWindow& window) = nullptr;
 	void (*tick)(GameState& game, sf::RenderWindow& window) = nullptr;
-	void (*enter)(const GameState& game) = nullptr;
-	void (*exit)(const GameState& game) = nullptr;
+	void (*enter)(GameState& game) = nullptr;
+	void (*exit)(GameState& game) = nullptr;
 };
 
 struct Bird {

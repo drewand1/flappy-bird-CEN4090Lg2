@@ -13,6 +13,7 @@
 #include "gamestatuses.h"
 #include "background.h"
 #include "pipes.h"
+#include "uiinit.h"
 
 int main() {
 	srand(time(NULL));
@@ -46,7 +47,8 @@ int main() {
 	}
 
 	resetGame(game);
-
+	registerUIGameState(&game);
+	initFrameManager(game.ui);
 	setLetterboxView(window);
 
 	while (window.isOpen()) {
@@ -77,15 +79,16 @@ int main() {
 			}
 		}
 
-		if (game.status.tick) { // TODO: Find a way to tell whether is a playing state
+		if (game.status.tick) {
 			game.status.tick(game, window);
 		}
 
 		window.clear();
+
 		if (game.status.draw)
 			game.status.draw(game, window);
-
-		// draw ui
+		game.ui.drawFrames(window);
+		
 		window.display();
 	}
 

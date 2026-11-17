@@ -15,7 +15,8 @@ static sf::Font menuFont("rsc/fonts/PressStart2P-Regular.ttf");
 GameStatus GameStatuses::menu = {
 	.keyPressed = keyPressedMenu,
 	.mouseButtonPressed = mouseBirdButton,
-	.draw = drawMenu
+	.draw = drawMenu,
+	.exit = exitMenu
 };
 
 // Fn defs
@@ -30,8 +31,9 @@ void initMenu() {
 
 void keyPressedMenu(GameState& game, const sf::Event::KeyPressed* event) {
 	if (event->scancode == sf::Keyboard::Scancode::Space) {
-		resetGame(game);
-		playGame(game);
+		//resetGame(game);
+		//playGame(game);
+		game.ui.root()->editChildByID("gamemodeMenu")->visible(true);
 	}
 	// B cycles through the background themes, wrapping back to the first one
 	else if (event->scancode == sf::Keyboard::Scancode::B) {
@@ -131,4 +133,12 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 	window.draw(pipeOption);
 	// Button that opens the bird picker
    	drawBirdButton(game, window);
+}
+
+void exitMenu(GameState& game) {
+	game.ui.root()->editChildByID("gamemodeMenu")->visible(false);
+	game.menuMusic.stop(); // Stop the menu music when the game starts
+	game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
+	game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay
+
 }
