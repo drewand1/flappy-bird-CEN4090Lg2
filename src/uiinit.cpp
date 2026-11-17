@@ -3,6 +3,13 @@
 #include "gamelogic.h"
 #include "gamestatuses.h"
 
+sf::Texture normalTex("rsc/textures/normal.png");
+sf::Texture crushTex("rsc/textures/crush.png");
+sf::Texture huntTex("rsc/textures/flaphunt.png");
+sf::Texture dropperTex("rsc/textures/dropper.png");
+sf::Texture dartsTex("rsc/textures/darts.png");
+sf::Texture golfTex("rsc/textures/golf.png");
+
 GameState* globalGameState = nullptr;
 
 void playGamemode(cenui::Frame* frame) {
@@ -11,15 +18,15 @@ void playGamemode(cenui::Frame* frame) {
 	if (frame->ID() == "NORMAL") {
 		setGameStatus(*globalGameState, GameStatuses::playing);
 	} else if (frame->ID() == "CRUSH") {
-		setGameStatus(*globalGameState, GameStatuses::playing);
+		setGameStatus(*globalGameState, GameStatuses::flappyCrush);
 	} else if (frame->ID() == "GOLF") {
-		setGameStatus(*globalGameState, GameStatuses::playing);
+		setGameStatus(*globalGameState, GameStatuses::golf);
 	} else if (frame->ID() == "DARTS") {
-		setGameStatus(*globalGameState, GameStatuses::playing);
+		setGameStatus(*globalGameState, GameStatuses::darts);
 	} else if (frame->ID() == "DROPPER") {
-		setGameStatus(*globalGameState, GameStatuses::playing);
+		setGameStatus(*globalGameState, GameStatuses::dropper);
 	} else if (frame->ID() == "DUCK HUNT") {
-		setGameStatus(*globalGameState, GameStatuses::playing);
+		setGameStatus(*globalGameState, GameStatuses::flapHunt);
 	} else {
 		setGameStatus(*globalGameState, GameStatuses::playing);
 	}
@@ -55,12 +62,12 @@ void initFrameManager(cenui::FrameManager& fMgr) {
 		->textColor({230, 230, 230, 255})
 		->textYAlignment(cenui::YAlignment::TOP);
 	
-	menu->append(makeGamemodeButton("NORMAL", &birdTex));
-	menu->append(makeGamemodeButton("CRUSH", nullptr));
-	menu->append(makeGamemodeButton("GOLF", nullptr));
-	menu->append(makeGamemodeButton("DARTS", nullptr));
-	menu->append(makeGamemodeButton("DROPPER", nullptr));
-	menu->append(makeGamemodeButton("DUCK HUNT", nullptr));
+	menu->append(makeGamemodeButton("NORMAL", &normalTex));
+	menu->append(makeGamemodeButton("CRUSH", &crushTex));
+	menu->append(makeGamemodeButton("GOLF", &golfTex));
+	menu->append(makeGamemodeButton("DARTS", &dartsTex));
+	menu->append(makeGamemodeButton("DROPPER", &dropperTex));
+	menu->append(makeGamemodeButton("DUCK HUNT", &huntTex));
 }
 
 void registerUIGameState(GameState* state) {

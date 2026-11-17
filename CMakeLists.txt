@@ -25,6 +25,11 @@ add_executable(prog
 	src/statuses/menu.cpp
 	src/statuses/playing.cpp
 	src/statuses/gameover.cpp
+	src/statuses/flaphunt.cpp
+	src/statuses/flappycrush.cpp
+	src/statuses/darts.cpp
+	src/statuses/golf.cpp
+	src/statuses/dropper.cpp
 )
 
 target_compile_features(prog PRIVATE cxx_std_23)
