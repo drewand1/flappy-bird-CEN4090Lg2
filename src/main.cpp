@@ -10,11 +10,10 @@
 #include "gamelogic.h"
 #include "gamedraw.h"
 #include "screencalc.h"
-#include "menu.h"
-#include "playing.h"
+#include "gamestatuses.h"
 #include "background.h"
 #include "pipes.h"
-#include "gamemodes.h"
+#include "uiinit.h"
 
 int main() {
 	srand(time(NULL));
@@ -48,7 +47,8 @@ int main() {
 	}
 
 	resetGame(game);
-
+	registerUIGameState(&game);
+	initFrameManager(game.ui);
 	setLetterboxView(window);
 
 	while (window.isOpen()) {
@@ -69,28 +69,26 @@ int main() {
 
 			// Mouse Events
 			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonPressed>()) {
-				// need some frame manager logic here
+				game.ui.handleMouseDown(window);
 				if (game.status.mouseButtonPressed)
 					game.status.mouseButtonPressed(game, mouseClick);
 			}
 
 			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonReleased>()) {
-				// neeed some frame manager logic here
+				game.ui.handleMouseUp(window);
 			}
 		}
-
-		if (game.status.draw == drawPlaying) { // Disgustingly hacky but if it works it works
-			runTickLogic(game, window);
-		}
-		else if (game.status.draw == drawFlapHunt) {
-			runFlapHuntTick(game, window);
+		
+		if (game.status.tick) {
+			game.status.tick(game, window);
 		}
 
 		window.clear();
+
 		if (game.status.draw)
 			game.status.draw(game, window);
-
-		// draw ui
+		game.ui.drawFrames(window);
+		
 		window.display();
 	}
 

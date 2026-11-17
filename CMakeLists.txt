@@ -6,7 +6,7 @@ include(FetchContent)
 FetchContent_Declare(
 	cenui
 	GIT_REPOSITORY https://github.com/drewand1/cenui/
-	GIT_TAG v1.0.0
+	GIT_TAG v1.0.1
 )
 FetchContent_MakeAvailable(cenui)
 
@@ -17,14 +17,19 @@ add_executable(prog
 	src/screencalc.cpp
 	src/gamelogic.cpp
 	src/gamedraw.cpp
-	src/menu.cpp
 	src/collision.cpp
-	src/playing.cpp
-	src/gameover.cpp
 	src/background.cpp
 	src/pipes.cpp
-	src/birdselect.cpp
-	src/gamemodes.cpp
+	src/uiinit.cpp
+	src/statuses/birdselect.cpp
+	src/statuses/menu.cpp
+	src/statuses/playing.cpp
+	src/statuses/gameover.cpp
+	src/statuses/flaphunt.cpp
+	src/statuses/flappycrush.cpp
+	src/statuses/darts.cpp
+	src/statuses/golf.cpp
+	src/statuses/dropper.cpp
 )
 
 target_compile_features(prog PRIVATE cxx_std_23)

@@ -5,6 +5,7 @@
 
 void keyPressedPlaying(GameState& game, const sf::Event::KeyPressed* event);
 void drawPlaying(const GameState& game, sf::RenderWindow& window);
+void tickPlaying(GameState& game, sf::RenderWindow& window);
 
 namespace GameStatuses {
 	extern GameStatus playing;

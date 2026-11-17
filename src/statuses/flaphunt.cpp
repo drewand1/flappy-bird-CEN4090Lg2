@@ -1,59 +1,22 @@
-#include "gamemodes.h"
+#include <vector>
+#include <SFML/Graphics.hpp>
 #include "gameconfig.h"
 #include "gamedraw.h"
 #include "screencalc.h"
 #include "background.h"
-#include "birdselect.h"
-#include <cmath>
-#include <vector>
+#include "gamestatuses.h"
 
-const std::string gameModeNames[GAME_MODE_COUNT] = {
-	"Classic",
-	"Flappy Crush",
-	"Darts",
-	"Flap Hunt"
-};
-
-// FOR UNIMPLEMENTED MODES (Flappy Crush & Darts)
-GameStatus GameStatuses::flappyCrush = {
-	.keyPressed = keyPressedStubMode,
-	.mouseButtonPressed = nullptr,
-	.draw = drawStubMode
-};
-
-GameStatus GameStatuses::darts = {
-	.keyPressed = keyPressedStubMode,
-	.mouseButtonPressed = nullptr,
-	.draw = drawStubMode
-};
-
-void keyPressedStubMode(GameState& game, const sf::Event::KeyPressed* event) {
-	if (event->scancode == sf::Keyboard::Scancode::Escape) {
-		resetGame(game);
-	}
-}
-
-void drawStubMode(const GameState& game, sf::RenderWindow& window) {
-	drawBackground(window, game.bgTheme, 0.0f, 0.0f);
-
-	std::string msg = gameModeNames[game.gameMode] + "\n\nComing Soon!\nPress [ESC] for Menu";
-	sf::Text text(gameFont, msg, 20);
-	text.setFillColor(sf::Color::White);
-	text.setOutlineColor(sf::Color::Black);
-	text.setOutlineThickness(2.0f);
-
-	sf::FloatRect bounds = text.getLocalBounds();
-	text.setOrigin(bounds.position + bounds.size / 2.0f);
-	text.setPosition({ VIEW_WIDTH / 2.0f, VIEW_HEIGHT / 2.0f });
-	window.draw(text);
-}
-
-// ROUGH OUTLINE: FLAP HUNT
 struct HuntBird {
 	sf::Vector2f pos;  // Centered world space, matching GameState::bird.pos
 	sf::Vector2f vel;
 	bool isShot = false;
 };
+
+void initFlapHunt(GameState& game);
+void runFlapHuntTick(GameState& game, sf::RenderWindow& window);
+void keyPressedFlapHunt(GameState& game, const sf::Event::KeyPressed* event);
+void mousePressedFlapHunt(GameState& game, const sf::Event::MouseButtonPressed* event);
+void drawFlapHunt(const GameState& game, sf::RenderWindow& window);
 
 static std::vector<HuntBird> huntTargets;
 static int ammoShells = 3;
@@ -61,7 +24,9 @@ static int ammoShells = 3;
 GameStatus GameStatuses::flapHunt = {
 	.keyPressed = keyPressedFlapHunt,
 	.mouseButtonPressed = mousePressedFlapHunt,
-	.draw = drawFlapHunt
+	.draw = drawFlapHunt,
+	.tick = runFlapHuntTick,
+	.enter = initFlapHunt
 };
 
 void initFlapHunt(GameState& game) {
@@ -112,7 +77,7 @@ void mousePressedFlapHunt(GameState& game, const sf::Event::MouseButtonPressed* 
 	}
 }
 
-void runFlapHuntTick(GameState& game, sf::Window& window) {
+void runFlapHuntTick(GameState& game, sf::RenderWindow& window) {
 	sf::Time now = game.clock.getElapsedTime();
 	float dt = (now - game.lastTick).asSeconds();
 	game.lastTick = now;
@@ -146,7 +111,7 @@ void runFlapHuntTick(GameState& game, sf::Window& window) {
 				if (game.health > 0) game.health--;
 				if (game.health == 0) {
 					game.alive = false;
-					game.status = GameStatuses::gameOver;
+					setGameStatus(game, GameStatuses::gameOver);
 					game.gameOverMusic.play();
 					return;
 				}

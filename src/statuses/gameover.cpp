@@ -4,8 +4,7 @@
 #include "screencalc.h"
 #include "gameconfig.h"
 #include "string"
-#include "playing.h"
-#include "gameover.h"
+#include "gamestatuses.h"
 
 GameStatus GameStatuses::gameOver = {
 	.keyPressed = keyGameOver,

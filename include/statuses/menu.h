@@ -7,6 +7,7 @@
 void initMenu();
 void drawMenu(const GameState& game, sf::RenderWindow& window);
 void keyPressedMenu(GameState& game, const sf::Event::KeyPressed* event);
+void exitMenu(GameState& game);
 
 namespace GameStatuses {
 	extern GameStatus menu;
