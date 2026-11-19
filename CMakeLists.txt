@@ -21,6 +21,7 @@ add_executable(prog
 	src/background.cpp
 	src/pipes.cpp
 	src/uiinit.cpp
+	src/textbox.cpp
 	src/statuses/birdselect.cpp
 	src/statuses/menu.cpp
 	src/statuses/playing.cpp

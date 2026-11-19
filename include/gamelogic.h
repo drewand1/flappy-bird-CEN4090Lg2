@@ -13,6 +13,7 @@ struct GameState; // Forward Declaration for GameStatus
 struct GameStatus {
 	void (*keyPressed)(GameState& game, const sf::Event::KeyPressed* event) = nullptr;
 	void (*mouseButtonPressed)(GameState& game, const sf::Event::MouseButtonPressed* event) = nullptr;
+	void (*textEntered)(GameState& game, const sf::Event::TextEntered* event) = nullptr;
 	void (*draw)(const GameState& game, sf::RenderWindow& window) = nullptr;
 	void (*tick)(GameState& game, sf::RenderWindow& window) = nullptr;
 	void (*enter)(GameState& game) = nullptr;

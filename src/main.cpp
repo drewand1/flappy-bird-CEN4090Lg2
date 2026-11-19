@@ -67,6 +67,12 @@ int main() {
 					game.status.keyPressed(game, keyPressed);
 			}
 
+			// Text Events (for textboxes)
+			if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
+				if (game.status.textEntered)
+					game.status.textEntered(game, textEntered);
+			}
+
 			// Mouse Events
 			if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonPressed>()) {
 				game.ui.handleMouseDown(window);
