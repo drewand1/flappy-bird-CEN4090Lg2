@@ -11,6 +11,7 @@ sf::Texture dartsTex("rsc/textures/darts.png");
 sf::Texture golfTex("rsc/textures/golf.png");
 
 GameState* globalGameState = nullptr;
+static cenui::Frame* gamemodeMenu = nullptr;
 
 void playGamemode(cenui::Frame* frame) {
 	resetGame(*globalGameState);
@@ -68,6 +69,11 @@ void initFrameManager(cenui::FrameManager& fMgr) {
 	menu->append(makeGamemodeButton("DARTS", &dartsTex));
 	menu->append(makeGamemodeButton("DROPPER", &dropperTex));
 	menu->append(makeGamemodeButton("DUCK HUNT", &huntTex));
+	gamemodeMenu = menu;
+}
+
+cenui::Frame* gamemodeMenuFrame() {
+	return gamemodeMenu;
 }
 
 void registerUIGameState(GameState* state) {
