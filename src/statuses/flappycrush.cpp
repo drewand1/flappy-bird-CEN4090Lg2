@@ -1,23 +1,29 @@
+#include <cstdlib>
 #include <vector>
 #include <cstdint>
 #include <algorithm>
+#include <random>
+#include <iostream>
 #include "gamestatuses.h"
+#include "gameconfig.h"
 #include "gamedraw.h"
 #include "pipes.h"
-#include "gameconfig.h"
+#include "background.h"
+#include "screencalc.h"
 
-constexpr float GRAV_CONST = -10.0f;
-constexpr float DEFAULT_PIPE_OPENING = 100.0f;
+constexpr float GRAV_CONST = -200.0f;
+constexpr float DEFAULT_PIPE_OPENING = 200.0f;
 constexpr float PIPE_X = 200.0f;
-constexpr float BOUNCE_BACK = 100.0f;
-constexpr float BOUNCE_BACK_DAMP_FACTOR = 0.5f;
-constexpr float PIPE_MOVE_SPEED = 10.0f;
+constexpr float BOUNCE_BACK = 500.0f;
+constexpr float BOUNCE_BACK_DAMP_FACTOR = 0.8f;
+constexpr float PIPE_MOVE_SPEED = 1600.0f;
+constexpr float BIRD_SPAWN_COOLDOWN = 3.0f;
 
 // Types
 struct CrushBird {
-	sf::Vector2f position;
-	sf::Vector2f velocity;
-	uint8_t jumpAtYMinus = 0;
+	sf::Vector2f position = {-500, 0};
+	sf::Vector2f velocity = {0, 0};
+	int8_t jumpAtY = 0;
 	uint8_t skin = 0;
 	uint8_t jumpPower = 0;
 	uint8_t targetXVel = 0;
@@ -33,8 +39,10 @@ struct CrushGame {
 // Internal globals
 static CrushGame globalCrush;
 
+
 // Fn decs
-void updateBird(GameState& game, CrushGame& crush, size_t idx, float dt);
+CrushBird makeRandomBird();
+void updateBird(GameState& game, CrushGame& crush, size_t& idx, float dt);
 
 void crushKeyPressed(GameState& game, const sf::Event::KeyPressed* event);
 void crushDraw(const GameState& game, sf::RenderWindow& window);
@@ -51,21 +59,32 @@ GameStatus GameStatuses::flappyCrush = {
 	.exit = crushExit
 };
 
-void updateBird(GameState& game, CrushGame& crush, size_t idx, float dt) {
+CrushBird makeRandomBird() {
+	// Magic constants everywhere!
+	CrushBird newBird;
+	newBird.jumpAtY = static_cast<int8_t>((rand() % 120) - 120);
+	newBird.targetXVel = static_cast<uint8_t>((rand() % 300) + 700);
+	newBird.jumpPower = static_cast<uint8_t>((rand() % 100) + 100);
+	newBird.skin = static_cast<uint8_t>(rand() % 8);
+	newBird.velocity.x = newBird.targetXVel;
+	return newBird;
+}
+
+void updateBird(GameState& game, CrushGame& crush, size_t& idx, float dt) {
 	CrushBird& bird = crush.birds[idx];
 
 	// Updating position and velocity
 	bird.position += bird.velocity * dt;
-	bird.velocity.y -= GRAV_CONST * dt;
+	bird.velocity.y += GRAV_CONST * dt;
 	
 	if (bird.targetXVel - bird.velocity.x > 0.01f) { // if bird is knocked back
 		float diff = bird.targetXVel - bird.velocity.x;
 		bird.velocity.x += diff * BOUNCE_BACK_DAMP_FACTOR * dt;
-
 	}
 
-	if (bird.position.y <= bird.jumpAtYMinus) {
-		bird.velocity.y += bird.jumpPower;
+	if (bird.position.y < bird.jumpAtY) {
+		bird.velocity.y = bird.jumpPower;
+		bird.position.y = bird.jumpAtY;
 	}
 
 	// Collision handling
@@ -81,14 +100,13 @@ void updateBird(GameState& game, CrushGame& crush, size_t idx, float dt) {
 			crush.birds[idx] = crush.birds[crush.birds.size() - 1];	// WARNING: Invalidates bird reference!
 			crush.birds.pop_back();
 			game.score++;
-
+			idx--;
 			return;
 		} else {		// On the side
 			float diff = birdRightX - pipeLeftX;
 			bird.position.x -= diff;
 			bird.velocity.x = -BOUNCE_BACK;
 			game.hitSound.play();
-
 			return;
 		}
 	}
@@ -97,14 +115,30 @@ void updateBird(GameState& game, CrushGame& crush, size_t idx, float dt) {
 	if (birdRightX >= VIEW_WIDTH * 0.5f) {
 		game.health--;
 	}
-
 }
 
 void crushKeyPressed(GameState& game, const sf::Event::KeyPressed* event) {
-
+	switch (event->scancode) {
+	case sf::Keyboard::Scancode::Escape:
+		setGameStatus(game, GameStatuses::menu);
+		break;
+	}
 }
 
-void crushDraw(const GameState& game, sf::RenderWindow& window) {}
+void crushDraw(const GameState& game, sf::RenderWindow& window) {
+	drawBackground(window, game.bgTheme, 0, 0);
+
+	drawPipe(window, game.pipeSkin, normToScreen(sf::Vector2f(PIPE_X, globalCrush.pipeOpening * 0.5), window), false, 200);
+	drawPipe(window, game.pipeSkin, normToScreen(sf::Vector2f(PIPE_X, globalCrush.pipeOpening * -0.5), window), true, 200);
+
+	for (int i = 0; i < globalCrush.birds.size(); i++) {
+		CrushBird& bird = globalCrush.birds[i];
+		birdSprite.setTexture(birdSkinTexture(bird.skin));
+		birdSprite.setPosition(normToScreen(bird.position, window));
+		birdSprite.setRotation(sf::degrees(std::clamp(-40 - (bird.velocity.y - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
+		window.draw(birdSprite);
+	}
+}
 
 void crushTick(GameState& game, sf::RenderWindow& window) {
 	sf::Time now = game.clock.getElapsedTime();
@@ -124,7 +158,11 @@ void crushTick(GameState& game, sf::RenderWindow& window) {
 
 	globalCrush.pipeOpening = std::clamp(globalCrush.pipeOpening, 0.0f, DEFAULT_PIPE_OPENING);
 
-	// TODO: Handle bird spawning
+	// Handle bird spawning
+	if ((now - globalCrush.lastBirdSpawnTick).asSeconds() >= BIRD_SPAWN_COOLDOWN) {
+		globalCrush.lastBirdSpawnTick = now;
+		globalCrush.birds.emplace_back(makeRandomBird());
+	}
 
 	// Handling birds
 	for (size_t i = 0; i < globalCrush.birds.size(); i++) {
@@ -142,9 +180,27 @@ void crushTick(GameState& game, sf::RenderWindow& window) {
 
 void crushEnter(GameState& game) {
 	globalCrush.birds.reserve(100);
+	globalCrush.lastBirdSpawnTick = game.clock.getElapsedTime();
+	globalCrush.shouldClosePipes = false;
+	globalCrush.pipeOpening = DEFAULT_PIPE_OPENING;
 }
 
 void crushExit(GameState& game) {
 	globalCrush.birds.clear();
 	globalCrush.birds.shrink_to_fit();
+
+	// CANNOT call resetGame() because resetGame() sets status which invokes
+	// this function again and thus we have infinite recursion.
+	if (game.menuMusic.getStatus() != sf::SoundSource::Status::Playing) {
+   		 game.menuMusic.play(); 
+	}
+
+	game.alive = true;
+	game.health = 3;
+	game.lastHitTime = sf::seconds(-1.0f);
+	game.bird.pos = {0.0f, 0.0f};
+	game.bird.yVel = 0.0f;
+	game.pipes.clear();
+	game.score = 0;
+	game.scrollDistance = 0.0f;
 }
