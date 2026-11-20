@@ -1,3 +1,8 @@
+// TODO: solve bug where gameover plays both menu and gameover music
+// TODO: add black text outline
+// TODO: Make pipe close cooldown
+// TODO: Make spawn cooldown decrease over time
+
 #include <cstdlib>
 #include <vector>
 #include <cstdint>
@@ -38,6 +43,8 @@ struct CrushGame {
 
 // Internal globals
 static CrushGame globalCrush;
+static sf::Text scoreText(gameFont, "SCORE: 0", 20u);
+static sf::Text livesText(gameFont, "LIVES: 3", 20u);
 
 
 // Fn decs
@@ -87,22 +94,27 @@ void updateBird(GameState& game, CrushGame& crush, size_t& idx, float dt) {
 		bird.position.y = bird.jumpAtY;
 	}
 
-	// Collision handling
+	// Collision handling (this is UGLY but I do not give a damn)
 	float birdLeftX = bird.position.x - BIRD_RADIUS;
 	float birdRightX = bird.position.x + BIRD_RADIUS;
 	float pipeLeftX = PIPE_X - PIPE_HALF_WIDTH;
 	float pipeRightX = PIPE_X + PIPE_HALF_WIDTH;
-	bool inXBounds = birdRightX > pipeLeftX && birdLeftX < pipeRightX;
-	if (inXBounds) {
-		bool inYBounds = bird.position.y < crush.pipeOpening * 0.5f
-			&& bird.position.y > crush.pipeOpening * -0.5f;
-		if (inYBounds) {	// In the gap
+	float rightOverlap = birdRightX - pipeLeftX;
+	float leftOverlap = pipeRightX - birdLeftX;
+	float topOverlap = (bird.position.y + BIRD_RADIUS) - (crush.pipeOpening * 0.5f);
+	float bottomOverlap = (crush.pipeOpening * -0.5f) - (bird.position.y - BIRD_RADIUS);
+	bool inGap = bird.position.y + BIRD_RADIUS < crush.pipeOpening * 0.5f
+			&& bird.position.y - BIRD_RADIUS > crush.pipeOpening * -0.5f;
+	bool isCrushed;
+	if (rightOverlap > 0 && leftOverlap > 0 && (topOverlap > 0 || bottomOverlap > 0)) {
+		if ((topOverlap > 0 && topOverlap < rightOverlap) || (bottomOverlap > 0 && bottomOverlap < rightOverlap)) { // Crushed
 			crush.birds[idx] = crush.birds[crush.birds.size() - 1];	// WARNING: Invalidates bird reference!
 			crush.birds.pop_back();
 			game.score++;
+			scoreText.setString("SCORE: " + std::to_string(game.score));
 			idx--;
 			return;
-		} else {		// On the side
+		} else {
 			float diff = birdRightX - pipeLeftX;
 			bird.position.x -= diff;
 			bird.velocity.x = -BOUNCE_BACK;
@@ -114,6 +126,10 @@ void updateBird(GameState& game, CrushGame& crush, size_t& idx, float dt) {
 	// Right edge detection
 	if (birdRightX >= VIEW_WIDTH * 0.5f) {
 		game.health--;
+		livesText.setString("LIVES: " + std::to_string(game.health));
+		crush.birds[idx] = crush.birds[crush.birds.size() - 1];	// WARNING: Invalidates bird reference!
+		crush.birds.pop_back();
+		idx--;
 	}
 }
 
@@ -138,6 +154,9 @@ void crushDraw(const GameState& game, sf::RenderWindow& window) {
 		birdSprite.setRotation(sf::degrees(std::clamp(-40 - (bird.velocity.y - BIRD_JUMP_VEL) / 10.0f, -40.0f, 60.0f)));
 		window.draw(birdSprite);
 	}
+
+	window.draw(scoreText);
+	window.draw(livesText);
 }
 
 void crushTick(GameState& game, sf::RenderWindow& window) {
@@ -183,6 +202,11 @@ void crushEnter(GameState& game) {
 	globalCrush.lastBirdSpawnTick = game.clock.getElapsedTime();
 	globalCrush.shouldClosePipes = false;
 	globalCrush.pipeOpening = DEFAULT_PIPE_OPENING;
+
+	scoreText.setString("SCORE: 0");
+	scoreText.setPosition({10, 10});
+	livesText.setString("LIVES: 3");
+	livesText.setPosition({10, 36});
 }
 
 void crushExit(GameState& game) {
