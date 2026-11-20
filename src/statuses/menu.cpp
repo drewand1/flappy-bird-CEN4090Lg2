@@ -4,6 +4,7 @@
 #include "background.h"
 #include "pipes.h"
 #include "statuses/birdselect.h"
+#include "uiinit.h"
 
 // Loads its own copy of the bird texture so this file doesn't depend on
 // gamedraw.cpp. The pipes come from pipes.cpp so the menu shows
@@ -34,7 +35,7 @@ void keyPressedMenu(GameState& game, const sf::Event::KeyPressed* event) {
 	if (event->scancode == sf::Keyboard::Scancode::Space) {
 		//resetGame(game);
 		//playGame(game);
-		game.ui.root()->editChildByID("gamemodeMenu")->visible(true);
+		gamemodeMenuFrame()->visible(true);
 	}
 	// B cycles through the background themes, wrapping back to the first one
 	else if (event->scancode == sf::Keyboard::Scancode::B) {
@@ -138,7 +139,7 @@ void drawMenu(const GameState& game, sf::RenderWindow& window) {
 }
 
 void exitMenu(GameState& game) {
-	game.ui.root()->editChildByID("gamemodeMenu")->visible(false);
+	gamemodeMenuFrame()->visible(false);
 	game.menuMusic.stop(); // Stop the menu music when the game starts
 	game.lastPipeSpawn = game.clock.getElapsedTime(); // don't insta-spawn a pipe on start
 	game.lastTick = game.clock.getElapsedTime(); // avoid a big dt jump on the first tick of gameplay

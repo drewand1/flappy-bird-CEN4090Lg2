@@ -58,7 +58,6 @@ void TextBox::refresh() {
 	if (!mFrame)
 		return;
 
-	// Pad with a space when unfocused so the text doesn't shift around
-	// when the caret appears/disappears (the game font is monospaced).
+	// pad with a space when unfocused
 	mFrame->text(mValue + (mFocused ? '_' : ' '));
 }

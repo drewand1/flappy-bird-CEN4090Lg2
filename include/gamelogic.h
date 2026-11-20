@@ -5,7 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <cenui.h>
+#include <memory>
 #include <vector>
+#include "scoreboard.h"
 
 
 struct GameState; // Forward Declaration for GameStatus
@@ -66,6 +68,9 @@ struct GameState {
 	sf::Sound hitSound{hitBuffer};
 	sf::SoundBuffer coinBuffer;
 	sf::Sound coinSound{coinBuffer};
+
+	// online scoreboard, only constructed if user opts-in
+	std::unique_ptr<ScoreboardClient> scoreboard;
 };
 
 void setGameStatus(GameState& game, GameStatus status);

@@ -14,6 +14,7 @@
 #include "background.h"
 #include "pipes.h"
 #include "uiinit.h"
+#include "scoreprompt.h"
 
 int main() {
 	srand(time(NULL));
@@ -48,6 +49,7 @@ int main() {
 
 	resetGame(game);
 	registerUIGameState(&game);
+	initScorePrompt(game);
 	initFrameManager(game.ui);
 	setLetterboxView(window);
 
