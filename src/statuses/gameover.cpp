@@ -5,14 +5,26 @@
 #include "gameconfig.h"
 #include "string"
 #include "gamestatuses.h"
+#include "scoreprompt.h"
+
+static void tickGameOver(GameState& game, sf::RenderWindow&) {
+	tickScorePrompt(game);
+}
 
 GameStatus GameStatuses::gameOver = {
 	.keyPressed = keyGameOver,
 	.mouseButtonPressed = mouseGameOver,
-	.draw = drawGameOver
+	.textEntered = textEnteredScorePrompt,
+	.draw = drawGameOver,
+	.tick = tickGameOver,
+	.enter = openScorePrompt,
+	.exit = closeScorePrompt
 };
 
 void mouseGameOver(GameState& game, const sf::Event::MouseButtonPressed* event) {
+	if (scorePromptOpen())
+		return;
+
 	if (event->button == sf::Mouse::Button::Left) {
 		sf::Vector2f mousePos = game.window->mapPixelToCoords(sf::Mouse::getPosition(*(game.window)));
 		sf::Vector2f winSz(game.window->getSize());
@@ -32,6 +44,11 @@ void mouseGameOver(GameState& game, const sf::Event::MouseButtonPressed* event) 
 }
 
 void keyGameOver(GameState& game, const sf::Event::KeyPressed* event) {
+	if (scorePromptOpen()) {
+		keyPressedScorePrompt(game, event);
+		return;
+	}
+
 	if (event->scancode == sf::Keyboard::Scan::Space) {
 		resetGame(game);
 		playGame(game);

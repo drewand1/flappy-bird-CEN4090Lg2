@@ -14,6 +14,7 @@
 #include "background.h"
 #include "pipes.h"
 #include "uiinit.h"
+#include "scoreprompt.h"
 
 int main() {
 	srand(time(NULL));
@@ -48,6 +49,7 @@ int main() {
 
 	resetGame(game);
 	registerUIGameState(&game);
+	initScorePrompt(game);
 	initFrameManager(game.ui);
 	setLetterboxView(window);
 
@@ -65,6 +67,12 @@ int main() {
 			if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
 				if (game.status.keyPressed)
 					game.status.keyPressed(game, keyPressed);
+			}
+
+			// Text Events (for textboxes)
+			if (const auto* textEntered = event->getIf<sf::Event::TextEntered>()) {
+				if (game.status.textEntered)
+					game.status.textEntered(game, textEntered);
 			}
 
 			// Mouse Events

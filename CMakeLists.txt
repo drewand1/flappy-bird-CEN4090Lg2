@@ -21,6 +21,9 @@ add_executable(prog
 	src/background.cpp
 	src/pipes.cpp
 	src/uiinit.cpp
+	src/textbox.cpp
+	src/scoreboard.cpp
+	src/scoreprompt.cpp
 	src/statuses/birdselect.cpp
 	src/statuses/menu.cpp
 	src/statuses/playing.cpp
@@ -37,6 +40,12 @@ target_include_directories(prog PRIVATE include)
 target_link_libraries(prog PRIVATE SFML::Graphics)
 target_link_libraries(prog PRIVATE cenui)
 target_link_libraries(prog PRIVATE SFML::Audio)
+
+# scoreboard client
+include(cmake/httplib.cmake)
+target_link_libraries(prog PRIVATE httplib::httplib)
+
+add_subdirectory(server)
 
 # Copy the rsc folder to the output directory so the executable can find it
 add_custom_command(TARGET prog POST_BUILD

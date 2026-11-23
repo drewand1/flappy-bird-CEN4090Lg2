@@ -7,4 +7,6 @@
 void initFrameManager(cenui::FrameManager& fMgr);
 void registerUIGameState(GameState* state);
 
+cenui::Frame* gamemodeMenuFrame();
+
 #endif
