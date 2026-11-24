@@ -1,8 +1,3 @@
-// TODO: solve bug where gameover plays both menu and gameover music
-// TODO: add black text outline
-// TODO: Make pipe close cooldown
-// TODO: Make spawn cooldown decrease over time
-
 #include <cstdlib>
 #include <vector>
 #include <cstdint>
@@ -22,7 +17,8 @@ constexpr float PIPE_X = 200.0f;
 constexpr float BOUNCE_BACK = 500.0f;
 constexpr float BOUNCE_BACK_DAMP_FACTOR = 0.8f;
 constexpr float PIPE_MOVE_SPEED = 1600.0f;
-constexpr float BIRD_SPAWN_COOLDOWN = 3.0f;
+constexpr float MAX_BIRD_SPAWN_COOLDOWN = 3.0f;
+constexpr float MIN_BIRD_SPAWN_COOLDOWN = 0.1f;
 
 // Types
 struct CrushBird {
@@ -39,6 +35,7 @@ struct CrushGame {
 	float pipeOpening = DEFAULT_PIPE_OPENING;
 	bool shouldClosePipes = false;
 	sf::Time lastBirdSpawnTick;
+	float spawnCooldown = MAX_BIRD_SPAWN_COOLDOWN;
 };
 
 // Internal globals
@@ -107,11 +104,12 @@ void updateBird(GameState& game, CrushGame& crush, size_t& idx, float dt) {
 			&& bird.position.y - BIRD_RADIUS > crush.pipeOpening * -0.5f;
 	bool isCrushed;
 	if (rightOverlap > 0 && leftOverlap > 0 && (topOverlap > 0 || bottomOverlap > 0)) {
-		if ((topOverlap > 0 && topOverlap < rightOverlap) || (bottomOverlap > 0 && bottomOverlap < rightOverlap)) { // Crushed
+		if (((topOverlap > 0 && topOverlap < rightOverlap) || (bottomOverlap > 0 && bottomOverlap < rightOverlap)) && globalCrush.pipeOpening > 0.1f) { // Crushed
 			crush.birds[idx] = crush.birds[crush.birds.size() - 1];	// WARNING: Invalidates bird reference!
 			crush.birds.pop_back();
 			game.score++;
 			scoreText.setString("SCORE: " + std::to_string(game.score));
+			game.coinSound.play();
 			idx--;
 			return;
 		} else {
@@ -177,8 +175,13 @@ void crushTick(GameState& game, sf::RenderWindow& window) {
 
 	globalCrush.pipeOpening = std::clamp(globalCrush.pipeOpening, 0.0f, DEFAULT_PIPE_OPENING);
 
+	// Spawn cooldown changing
+	if (globalCrush.spawnCooldown > MIN_BIRD_SPAWN_COOLDOWN) {
+		globalCrush.spawnCooldown -= (MAX_BIRD_SPAWN_COOLDOWN - MIN_BIRD_SPAWN_COOLDOWN) * 0.01 * dt;
+	}
+
 	// Handle bird spawning
-	if ((now - globalCrush.lastBirdSpawnTick).asSeconds() >= BIRD_SPAWN_COOLDOWN) {
+	if ((now - globalCrush.lastBirdSpawnTick).asSeconds() >= globalCrush.spawnCooldown) {
 		globalCrush.lastBirdSpawnTick = now;
 		globalCrush.birds.emplace_back(makeRandomBird());
 	}
@@ -194,7 +197,6 @@ void crushTick(GameState& game, sf::RenderWindow& window) {
 		setGameStatus(game, GameStatuses::gameOver);
 		game.gameOverMusic.play();
 	}
-
 }
 
 void crushEnter(GameState& game) {
@@ -202,11 +204,16 @@ void crushEnter(GameState& game) {
 	globalCrush.lastBirdSpawnTick = game.clock.getElapsedTime();
 	globalCrush.shouldClosePipes = false;
 	globalCrush.pipeOpening = DEFAULT_PIPE_OPENING;
+	globalCrush.spawnCooldown = MAX_BIRD_SPAWN_COOLDOWN;
 
 	scoreText.setString("SCORE: 0");
 	scoreText.setPosition({10, 10});
+	scoreText.setOutlineThickness(3);
+	scoreText.setOutlineColor({14, 14, 14, 255});
 	livesText.setString("LIVES: 3");
 	livesText.setPosition({10, 36});
+	livesText.setOutlineThickness(3);
+	livesText.setOutlineColor({14, 14, 14, 255});
 }
 
 void crushExit(GameState& game) {
@@ -215,10 +222,6 @@ void crushExit(GameState& game) {
 
 	// CANNOT call resetGame() because resetGame() sets status which invokes
 	// this function again and thus we have infinite recursion.
-	if (game.menuMusic.getStatus() != sf::SoundSource::Status::Playing) {
-   		 game.menuMusic.play(); 
-	}
-
 	game.alive = true;
 	game.health = 3;
 	game.lastHitTime = sf::seconds(-1.0f);
