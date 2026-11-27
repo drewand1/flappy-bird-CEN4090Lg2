@@ -84,7 +84,7 @@ static void loseLife(GameState& game, sf::Time now) {
 
 	if (game.health == 0) { // health is unsigned, so check for exactly 0
 		game.alive = false;
-		game.status = GameStatuses::gameOver;
+		setGameStatus(game, GameStatuses::gameOver);
 		game.gameOverMusic.play();
 	}
 }
